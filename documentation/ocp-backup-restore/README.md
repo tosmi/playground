@@ -1,9 +1,9 @@
 
 # Table of Contents
 
-1.  [Backup / restore tests](#org4ed137d)
-    1.  [first test: Replacing unhealth member](#orgf1f3ba7)
-    2.  [second test: Restoring to a previous cluster state](#org2aabf82)
+1.  [Backup / restore tests](#orga3af5fa)
+    1.  [first test: Replacing unhealth member](#orgb13e052)
+    2.  [second test: Restoring to a previous cluster state](#org2e96265)
 
 We tested 2 scenarios:
 
@@ -11,7 +11,7 @@ We tested 2 scenarios:
 -   losing 2 out of 3 control plane hosts
 
 
-<a id="org4ed137d"></a>
+<a id="orga3af5fa"></a>
 
 # Backup / restore tests
 
@@ -26,7 +26,7 @@ collect etcd member list, just to be sure
     b061c3a7cd643408, started, master01, https://10.0.0.182:2380, https://10.0.0.182:2379, false
 
 
-<a id="orgf1f3ba7"></a>
+<a id="orgb13e052"></a>
 
 ## first test: [Replacing unhealth member](//docs.openshift.com/container-platform/4.5/backup_and_restore/replacing-unhealthy-etcd-member.html#replacing-unhealthy-etcd-member)
 
@@ -130,7 +130,7 @@ pods are starting up on master03 but no pod definition for etcd. after 2-3 minut
 etcd done, kube-apiserver is still progressing
 
 
-<a id="org2aabf82"></a>
+<a id="org2e96265"></a>
 
 ## second test: [Restoring to a previous cluster state](https://docs.openshift.com/container-platform/4.5/backup_and_restore/disaster_recovery/scenario-2-restoring-cluster-state.html)
 
@@ -220,7 +220,7 @@ output:
 
 etcd pod is gone
 
-disabled kube-apiserer
+disabled kube-apiserver
 
     mv /etc/kubernetes/manifests/kube-apiserver-pod.yaml /tmp/
 
@@ -325,7 +325,7 @@ oc commands started working again
     storage                                    4.5.7     True        False         False      4d12h
     [root@bastion ~]#
 
-seem like cluster is healthy, after a few seconds kube-apiserver, kube-control-manager start progessing
+seems like cluster is healthy, after a few seconds kube-apiserver, kube-control-manager start progessing
 
     [root@bastion ~]# oc get clusteroperators
     NAME                                       VERSION   AVAILABLE   PROGRESSING   DEGRADED   SINCE
@@ -413,7 +413,9 @@ just to be sure checked the state of etcd on master01 again
     +------------------+---------+----------+-------------------------+-------------------------+------------+
     [root@master01 manifests]#
 
-so a single etcd is still up and running ok. i think the hanging is caused by a rollout of a new kube-apiserver, because i deleted master02/03. we only have on master now&#x2026;
+so a single etcd is still up and running fine. i think the hanging is
+caused by a rollout of a new kube-apiserver, because i deleted
+master02/03. we only have one master now&#x2026;
 
 some clusteroperators are progessing (kube-apiserver)
 
@@ -454,7 +456,15 @@ some clusteroperators are progessing (kube-apiserver)
 reinstalled master02 and master03
 
 oc command started hanging again, IMHO kubeapiserver is restarting,
-seems to be a loop, doesn't work with on kubeapiserver running.  but
+seems to be a loop:
+
+1.  we delete nodes
+2.  new version of kube-apiserver should be rolled out
+3.  rollout restarts kube-apiserver
+4.  api is down (we have only one node)
+5.  old kube-apiserver starts
+6.  goto step 2
+
 cluster seems to be ok otherwise.
 
 master02 and master03 installed fine, waiting for CSR's to
@@ -485,14 +495,12 @@ after a few minutes csr's arrive
     csr-fz66b   22s   kubernetes.io/kubelet-serving                 system:node:master02                                                        Pending
     csr-tc9b5   97s   kubernetes.io/kube-apiserver-client-kubelet   system:serviceaccount:openshift-machine-config-operator:node-bootstrapper   Approved,Issued
     csr-tz2x5   22s   kubernetes.io/kubelet-serving                 system:node:master03                                                        Pending
-    [root@bastion ~]# ^Censhift-install --dir=/root/ocp/install wait-for bootstrap-complete
-    [root@bastion ~]# ^C
     [root@bastion ~]# oc adm certificate approve csr-fz66b csr-tz2x5
     certificatesigningrequest.certificates.k8s.io/csr-fz66b approved
     certificatesigningrequest.certificates.k8s.io/csr-tz2x5 approved
     [root@bastion ~]#
 
-new master02 and 03 are in the "not ready" state
+new master02 and 03 are in "not ready" state
 
     [root@bastion ~]# oc get nodes
     NAME       STATUS     ROLES    AGE     VERSION
@@ -514,7 +522,7 @@ etcd member list still show's only one member
     +------------------+---------+----------+-------------------------+-------------------------+------------+
     [root@master01 manifests]#
 
-after 5-10 minutes etcd pod got restarted and seemd to running in a 3 node cluster again
+after 5-10 minutes etcd pod got restarted and we are running a 3 node cluster again
 
     [root@master01 manifests]# crictl ps |grep etcde5c3511cea9fd       d1eec47fd97e5adda38c64780292df9c2eae0f260c0c26ed501822fbd2eb6d8b   About a minute ago   Running             etcd-metrics                                  0                   cf92570a2aa098378b34b47be3       d1eec47fd97e5adda38c64780292df9c2eae0f260c0c26ed501822fbd2eb6d8b   About a minute ago   Running             etcd                                          0                   cf92570a2aa09
     fc1d0dff8cc2c       d1eec47fd97e5adda38c64780292df9c2eae0f260c0c26ed501822fbd2eb6d8b   About a minute ago   Running             etcdctl                                       0                   cf92570a2aa09
@@ -584,3 +592,38 @@ nodes are ready
     master03   Ready    master   14m     v1.18.3+2cf11e2
     worker01   Ready    worker   5d22h   v1.18.3+2cf11e2
     worker02   Ready    worker   5d22h   v1.18.3+2cf11e2
+
+after a few more minutes, everything is like before the restore
+
+    [root@bastion haproxy]# oc get clusteroperator
+    NAME                                       VERSION   AVAILABLE   PROGRESSING   DEGRADED   SINCE
+    authentication                             4.5.7     True        False         False      5d23h
+    cloud-credential                           4.5.7     True        False         False      6d1h
+    cluster-autoscaler                         4.5.7     True        False         False      6d
+    config-operator                            4.5.7     True        False         False      6d
+    console                                    4.5.7     True        False         False      136m
+    csi-snapshot-controller                    4.5.7     True        True          False      4d9h
+    dns                                        4.5.7     True        False         False      6d
+    etcd                                       4.5.7     True        False         False      6d
+    image-registry                             4.5.7     True        False         True       6d
+    ingress                                    4.5.7     True        False         False      26h
+    insights                                   4.5.7     True        False         False      6d
+    kube-apiserver                             4.5.7     True        False         False      6d
+    kube-controller-manager                    4.5.7     True        False         False      6d
+    kube-scheduler                             4.5.7     True        False         False      6d
+    kube-storage-version-migrator              4.5.7     True        False         False      19h
+    machine-api                                4.5.7     True        False         False      6d
+    machine-approver                           4.5.7     True        False         False      6d
+    machine-config                             4.5.7     True        False         False      19h
+    marketplace                                4.5.7     True        False         False      26h
+    monitoring                                 4.5.7     False       True          True       125m
+    network                                    4.5.7     True        False         False      6d
+    node-tuning                                4.5.7     True        False         False      4d14h
+    openshift-apiserver                        4.5.7     True        False         False      128m
+    openshift-controller-manager               4.5.7     True        False         False      5d21h
+    openshift-samples                          4.5.7     True        False         False      4d14h
+    operator-lifecycle-manager                 4.5.7     True        False         False      6d
+    operator-lifecycle-manager-catalog         4.5.7     True        False         False      6d
+    operator-lifecycle-manager-packageserver   4.5.7     True        False         False      125m
+    service-ca                                 4.5.7     True        False         False      6d
+    storage                                    4.5.7     True        False         False      4d14h
