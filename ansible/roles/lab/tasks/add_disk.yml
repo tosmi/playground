@@ -13,6 +13,11 @@
       command: /usr/bin/virt-format --format=qcow2 -a "/var/lib/libvirt/images/{{ disk.name }}.qcow2"
   when: not additional_diskimage.stat.exists
 
+- name: query disk state
+  command: virsh domblkinfo "{{ item.name }}" "/var/lib/libvirt/images/{{ disk.name }}.qcow2"
+  ignore_errors: yes
+  register: domblkinfo
+
 - name: Attach disk image to host
   command: >
     virsh attach-disk {{ item.name }} \
@@ -20,4 +25,5 @@
     --target {{ disk.target }} \
     --subdriver qcow2
     --persistent
+  when: domblkinfo.rc != 0
 ...
