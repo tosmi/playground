@@ -104,7 +104,42 @@
         name:
         - git
         - ansible
+        - lvm2
         state: present
+
+    - name: Create a new primary partition
+      parted:
+        device: /dev/vdb
+        number: 1
+        state: present
+
+    - name: create physical volume for lvm
+      lvg:
+        vg: nfsvg
+        pvs: /dev/vdb1
+
+    - name: create nfs volume group
+      lvol:
+        vg: nfsvg
+        lv: nfslv
+
+    - name: create nfs filesystem
+      filesystem:
+        type: xfs
+        dev: /dev/nfsvg/nfslv
+
+    - name: create mountpoint for nfs
+      mount:
+        path: /exports/nfs
+        src: /dev/nfsvg/nfslv
+        fstype: xfs
+        state: mounted
+
+    - name: create export entry for nfs
+      lineinfile:
+        path: /etc/exports
+        regexp: '^/exports/nfs'
+        line: "/exports/nfs    *(rw)"
 
     - name: Clone help node repo
       git:
