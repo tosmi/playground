@@ -1,0 +1,90 @@
+- name: Wait 600 seconds for bastion to become reachable/usable
+  wait_for_connection:
+
+- name: register bastion
+  redhat_subscription:
+    activationkey: OCP4Playground
+    org_id: "{{ bastion_rhn_org_id }}"
+    syspurpose:
+      usage: "OCP4 Playground"
+  register: rhn_register
+
+- name: enable base repo
+  rhsm_repository:
+    name: rhel-8-for-x86_64-baseos-rpms
+    state: enabled
+  when: rhn_register.changed
+
+- name: upgrade all packages
+  dnf:
+    name: '*'
+    state: latest
+  register: upgraded
+
+- name: reboot bastion after updating
+  reboot:
+  when: upgraded.changed
+
+- name: install required packages
+  dnf:
+    name:
+      - haproxy
+      - dnsmasq
+      - bind-utils
+    state: present
+
+- name: deploy dnsmasq config
+  template:
+    src: templates/dnsmasq_ocp4.conf.j2
+    dest: /etc/dnsmasq.d/ocp4.conf
+
+- name: enable and start dnsmasq
+  service:
+    name: dnsmasq
+    enabled: yes
+    state: started
+
+- name: deploy additional hosts file for dnsmasq
+  template:
+    src: templates/hosts.j2
+    dest: /etc/hosts.ocp4
+  register: bastion_deployed_hosts
+
+- name: restart dnsmasq if hosts file changed
+  service:
+    name: dnsmasq
+    state: restarted
+  when: bastion_deployed_hosts.changed
+
+- name: deploy haproxy config
+  template:
+    src: templates/haproxy.conf.j2
+    dest: /etc/haproxy/haproxy.conf
+
+- name: create directory for haproxy service overwrite
+  file:
+    path: /etc/systemd/system/haproxy.service.d
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+
+- name: deploy haproxy systemd overwrite
+  copy:
+    src: files/haproxy_overwrite.conf
+    dest: /etc/systemd/system/haproxy.service.d/overwrite.conf
+    mode: '0644'
+    owner: root
+    group: root
+
+- name: allow haproxy to bind to any port
+  seboolean:
+    name: haproxy_connect_any
+    state: yes
+    persistent: yes
+
+- name: enable and start haproxy
+  service:
+    name: haproxy
+    enabled: yes
+    state: started

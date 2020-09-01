@@ -1,0 +1,24 @@
+<network>
+    <name>ocp4</name>
+    <domain name='compute.local'/>
+    <forward mode='nat'/>
+    <dns>
+        <forwarder domain='compute.local' addr="192.168.50.2"/>
+        <host ip='192.168.50.2'>
+            <hostname>bastion.compute.local</hostname>
+        </host>
+    </dns>
+
+    <ip address='192.168.50.1' netmask='255.255.255.0'>
+        <dhcp>
+            <host mac='52:54:00:00:50:02' name='bastion.compute.local' ip='192.168.50.2'/>
+            <host mac='52:54:00:00:50:03' name='bootstrap.compute.local' ip='192.168.50.3'/>
+            <host mac='52:54:00:00:50:10' name='master-0.compute.local' ip='192.168.50.10'/>
+            <host mac='52:54:00:00:50:11' name='master-1.compute.local' ip='192.168.50.11'/>
+            <host mac='52:54:00:00:50:12' name='master-2.compute.local' ip='192.168.50.12'/>
+            <host mac='52:54:00:00:50:20' name='worker-0.compute.local' ip='192.168.50.20'/>
+            <host mac='52:54:00:00:50:21' name='worker-1.compute.local' ip='192.168.50.21'/>
+            <host mac='52:54:00:00:50:22' name='worker-2.compute.local' ip='192.168.50.22'/>
+        </dhcp>
+    </ip>
+</network>

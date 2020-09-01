@@ -1,0 +1,46 @@
+---
+- name: install required packages
+  dnf:
+    name:
+      - libvirt
+      - podman
+      - virt-install
+      - virt-manager
+      - libguestfs-tools
+      - virt-viewer
+      - xauth
+      - python3-lxml
+      - tmux
+      - bind-utils
+      - dnsmasq
+      - tigervnc
+      - tigervnc-server
+      - xterm
+    state: present
+
+- name: create vnc user
+  user:
+    name: vnc
+    groups: wheel
+
+- name: enable and start libvirtd
+  systemd:
+    name: libvirtd
+    state: started
+    enabled: True
+
+- name: create libvirt hooks directory
+  file:
+    path: /etc/libvirt/hooks
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+
+- name: deploy libvirt network hook script
+  template:
+    src: network.j2
+    dest: /etc/libvirt/hooks/network
+    mode: '0755'
+    owner: root
+    group: root

@@ -1,0 +1,6 @@
+[{{ lab.name }}]
+{% if lab_ssh_proxy == "" %}
+  {{- item.name }} ansible_host={{ item.ipaddr }}
+{% else %}
+  {{- item.name }} ansible_host={{ item.ipaddr }} ansible_ssh_common_args='-o ProxyCommand="ssh -W %h:%p -q root@playground.stderr.at"'
+{% endif %}

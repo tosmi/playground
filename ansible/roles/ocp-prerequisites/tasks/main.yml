@@ -1,0 +1,120 @@
+---
+- name: install required packages
+  dnf:
+    name:
+      - libvirt
+      - podman
+      - virt-install
+      - virt-manager
+      - libguestfs-tools
+      - virt-viewer
+      - xauth
+      - python3-lxml
+      - tmux
+      - bind-utils
+      - dnsmasq
+      - tigervnc
+      - xterm
+    state: present
+
+- name: create vnc user
+  user:
+    name: vnc
+    groups: wheel
+
+- name: deploy ocp dnsmasq configuration
+  template:
+    src: ocp.conf.j2
+    dest: /etc/dnsmasq.d/ocp.conf
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: deploy dns dnsmasq configuration
+  template:
+    src: dns.conf.j2
+    dest: /etc/dnsmasq.d/dns.conf
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: enable and start dnsmasq service
+  service:
+    name: dnsmasq
+    state: started
+    enabled: true
+
+- name: download required RHCOS files
+  get_url:
+    url: "https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4.3/4.3.0/{{ item }}"
+    dest: "/root/Downloads/{{ item }}"
+  with_items:
+    - rhcos-4.3.0-x86_64-metal.raw.gz
+    - rhcos-4.3.0-x86_64-installer-initramfs.img
+    - rhcos-4.3.0-x86_64-installer-kernel
+
+- name: download and extract required client binaries
+  unarchive:
+    src: "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-4.3/{{ item }}"
+    dest: /usr/local/bin/
+    remote_src: yes
+    exclude:
+      - README.md
+  with_items:
+    - openshift-install-linux.tar.gz
+    - openshift-client-linux.tar.gz
+
+- name: enable and start libvirtd
+  systemd:
+    name: libvirtd
+    state: started
+    enabled: True
+
+- name: define ocp4 network
+  virt_net:
+    command: define
+    autostart: yes
+    name: ocp4
+    xml: '{{ lookup("template", "templates/network.xml.j2") }}'
+
+- name: start ocp4 network
+  virt_net:
+    command: create
+    name: ocp4
+
+- name: enable autostart for ocp4 network
+  virt_net:
+    autostart: yes
+    name: ocp4
+
+- name: pull httpd image
+  podman_image:
+    name: registry.access.redhat.com/rhscl/httpd-24-rhel7
+
+- name: create temporary httpd root dir
+  file:
+    name: /var/tmp/httpd
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+
+- name: copy required files to temporary httpd root
+  copy:
+    src: /root/Downloads/rhcos-4.3.0-x86_64-metal.raw.gz
+    dest: /var/tmp/httpd/rhcos-4.3.0-x86_64-metal.raw.gz
+    remote_src: yes
+
+- name: check if podman httpd container is running
+  command: /usr/bin/podman ps -q -f name=httpd
+  changed_when: no
+  register: prerequisites_podman_httpd
+
+- name: create and start podman httpd container
+  block:
+    - name: create a httpd podman container
+      command: /usr/bin/podman create -v /var/tmp/httpd:/var/www/html --name httpd -p 8080:8080 registry.access.redhat.com/rhscl/httpd-24-rhel7
+
+    - name: start the podman httpd container
+      command: podman start httpd
+  when: prerequisites_podman_httpd.stdout == ""

@@ -1,0 +1,58 @@
+- name: start a cluster
+  hosts: localhost
+  become: yes
+  gather_facts: no
+  tasks:
+    - name: stop worker nodes
+      virt:
+        name: "{{ item }}"
+        command: shutdown
+        state: shutdown
+      loop:
+        - infra01
+        - infra02
+        - worker01
+        - worker02
+
+    - name: wait for infra and worker node shutdown
+      virt:
+       name: "{{ item }}"
+       command: status
+      register: result
+      until: result.status == 'shutdown'
+      delay: 5
+      retries: 720
+      loop:
+        - infra01
+        - infra02
+        - worker01
+        - worker02
+
+    - name: stop control plane nodes
+      virt:
+        name: "{{ item }}"
+        command: shutdown
+        state: shutdown
+      loop:
+        - master01
+        - master02
+        - master03
+
+    - name: wait for masters to be shut down
+      virt:
+       name: "{{ item }}"
+       command: status
+      register: result
+      until: result.status == 'shutdown'
+      delay: 5
+      retries: 720
+      loop:
+        - master01
+        - master02
+        - master03
+
+    - name: stop the bastion host
+      virt:
+        name: bastion
+        command: shutdown
+        state: shutdown

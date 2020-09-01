@@ -1,0 +1,27 @@
+---
+- name: configuring lab environment for tower and satellite
+  gather_facts: no
+  hosts:
+    - playground.stderr.at
+  vars:
+    network:
+      name: test
+      startip: 192.169.100.1
+      netmask: 255.255.255.0
+    labhosts:
+      - name: silverblue32
+        image: Fedora-Cloud-Base-32-1.6.x86_64.qcow2
+        disksize: 50G
+        memory: 8192
+        cpu: 2
+        network: test
+        macaddr: "52:54:00:01:53:03"
+        ipaddr: "192.169.100.2"
+  roles:
+    - lab
+
+- name: configure a ostree host
+  gather_facts: no
+  hosts: silverblue32
+  roles:
+    - ostree-host

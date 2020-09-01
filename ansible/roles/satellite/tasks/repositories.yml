@@ -1,0 +1,61 @@
+- name: Enable RHEL 8 OS repos
+  theforeman.foreman.repository_set:
+    username: "{{ satellite_admin_username }}"
+    password: "{{ satellite_admin_password }}"
+    server_url: "{{ satellite.url}}"
+    validate_certs: false
+    organization: "{{ satellite_organization }}"
+    label: "{{ item }}"
+    repositories:
+      - releasever: "8"
+    state: enabled
+  loop:
+    - rhel-8-for-x86_64-appstream-rpms
+    - rhel-8-for-x86_64-baseos-rpms
+  register: rhel8_repos
+
+- name: Enable kickstart RHEL 8 OS repos
+  theforeman.foreman.repository_set:
+    username: "{{ satellite_admin_username }}"
+    password: "{{ satellite_admin_password }}"
+    server_url: "{{ satellite.url}}"
+    validate_certs: false
+    organization: "{{ satellite_organization }}"
+    label: "{{ item }}"
+    repositories:
+      - releasever: "8.2"
+    state: enabled
+  loop:
+    - rhel-8-for-x86_64-baseos-kickstart
+    - rhel-8-for-x86_64-appstream-kickstart
+  register: rhel8_kickstart
+
+- name: Enable additional RHEL 8 repos
+  theforeman.foreman.repository_set:
+    username: "{{ satellite_admin_username }}"
+    password: "{{ satellite_admin_password }}"
+    server_url: "{{ satellite.url}}"
+    validate_certs: false
+    organization: "{{ satellite_organization }}"
+    label: "{{ item }}"
+    all_repositories: yes
+    state: enabled
+  loop:
+    - fast-datapath-for-rhel-8-x86_64-rpms
+    - ansible-2.9-for-rhel-8-x86_64-rpms
+    - satellite-tools-6.7-for-rhel-8-x86_64-rpms
+  register: rhel8_additional
+
+- name: "Sync repository RHEL 8 repositories"
+  theforeman.foreman.repository_sync:
+    username: "{{ satellite_admin_username }}"
+    password: "{{ satellite_admin_password }}"
+    server_url: "{{ satellite.url}}"
+    validate_certs: false
+    product: "{{ item }}"
+    organization: "Lab"
+  loop:
+    - "Red Hat Ansible Engine"
+    - "Red Hat Enterprise Linux Fast Datapath"
+    - "Red Hat Enterprise Linux for x86_64"
+  when: (rhel8_repos.changed or rhel8_kickstart.changed or rhel8_additional.changed)

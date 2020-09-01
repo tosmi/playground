@@ -1,0 +1,18 @@
+---
+- name: setup the bastion host
+  gather_facts: no
+  hosts:
+    - playground.stderr.at
+  pre_tasks:
+    - include_tasks: roles/bastion/tasks/create_bastion.yml
+
+- name: configure bastion host
+  gather_facts: no
+  vars_prompt:
+    - name: "bastion_rhn_org_id"
+      prompt: "Enter RHN org id for subscribing the bastion host"
+      private: no
+  hosts:
+    - bastion
+  roles:
+    - bastion

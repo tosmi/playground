@@ -1,0 +1,48 @@
+---
+- name: create lab network and hosts
+  gather_facts: no
+  become: yes
+  hosts:
+    - localhost
+  vars:
+    rhn:
+      org_id: ""
+    lab:
+      ssh_public_key: ""
+      name: infra
+      network:
+        type: bridge
+        name: bridge0
+      hosts:
+        - name: satellite
+          network: bridge0
+          macaddr: "52:54:00:01:50:02"
+          ipaddr: "10.0.0.205"
+          disksize: 200G
+          memory: 24576
+          cpu: 4
+          register: yes
+          activationkey: Satellite
+          image: rhel-server-7.8-x86_64-kvm.qcow2
+  roles:
+    - lab
+
+- name: Configure satellite
+  hosts: satellite
+  collections:
+   - theforeman.foreman
+  gather_facts: no
+  vars:
+    satellite:
+      org_id: "13048846"
+      activationkey: Satellite
+      url: https://satellite.lan.stderr.at
+      hostname: satellite
+      domain: lan.stderr.at
+      fqdn: satellite.lan.stderr.at
+      pool_id: ""
+  roles:
+    - role: satellite
+      when: lab_destroy is not defined
+    # - role: rhev
+    #   when: lab_destroy is not defined

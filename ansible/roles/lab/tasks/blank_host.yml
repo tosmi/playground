@@ -1,0 +1,41 @@
+- name: Check if blank disk images already exist
+  stat:
+    path: "/var/lib/libvirt/images/{{ item.name }}-vda.qcow"
+  register: ocp_diskimage
+
+- name: Create and format blank disk image
+  block:
+    - name: Create disk images for {{ item.name}}
+      command: /usr/bin/qemu-img create -f qcow2 "/var/lib/libvirt/images/{{ item.name }}-vda.qcow2" 120G
+
+    - name: Format disk images for {{ item.name }}
+      command: /usr/bin/virt-format --format=qcow2 -a "/var/lib/libvirt/images/{{ item.name }}-vda.qcow2"
+  when: not ocp_diskimage.stat.exists
+
+- name: Create {{ item.name }} node with blank disk image and bridge networking
+  command: >
+    virt-install
+    --name {{ item.name }}
+    --disk /var/lib/libvirt/images/{{ item.name }}-vda.qcow2
+    --memory {{ item.memory }}
+    --vcpus {{ item.cpu }}
+    --os-type=linux
+    --os-variant rhel7.0
+    --network "bridge={{ lab.network.name }},mac={{ item.macaddr }}"
+    --pxe
+  when:
+    - lab.network.type == "bridge"
+
+- name: Create {{ item.name }} node with blank disk image and NAT networking
+  command: >
+    virt-install
+    --name {{ item.name }}
+    --disk /var/lib/libvirt/images/{{ item.name }}-vda.qcow2
+    --memory {{ item.memory }}
+    --vcpus {{ item.cpu }}
+    --os-type=linux
+    --os-variant rhel7.0
+    --network "network={{ lab.network.name }},mac={{ item.macaddr }}"
+    --pxe
+  when:
+    - lab.network.type == "nat"

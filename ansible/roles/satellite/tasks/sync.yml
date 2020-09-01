@@ -1,0 +1,18 @@
+---
+- name: Create a sync plan for products
+  theforeman.foreman.sync_plan:
+    username: "{{ satellite_admin_username }}"
+    password: "{{ satellite_admin_password }}"
+    server_url: "{{ satellite.url}}"
+    validate_certs: false
+    name: "Weekly RHEL Sync"
+    organization: "Lab"
+    interval: "weekly"
+    enabled: true
+    sync_date: "2017-01-01 00:00:00 UTC"
+    products:
+    - 'Red Hat Ansible Engine'
+    - 'Red Hat Enterprise Linux Fast Datapath'
+    - 'Red Hat Enterprise Linux for x86_64'
+    state: present
+...

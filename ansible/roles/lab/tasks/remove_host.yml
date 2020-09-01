@@ -1,0 +1,29 @@
+- name: Check if {{ item.name }} is defined
+  virt:
+    command: info
+  register: lab_virt_info
+
+- debug: var=lab_virt_info
+
+- name: Remove {{ item.name }}
+  block:
+  - name: destroying host {{ item.name }}
+    command: virsh destroy "{{ item.name }}"
+    when: lab_virt_info["{{ item.name }}"].state != "shutdown"
+
+  - name: undefining host {{ item.name }}
+    command: virsh undefine "{{ item.name }}"
+  when: item.name in lab_virt_info
+
+- name: Remove {{ item.name }} disk image
+  file:
+    path: /var/lib/libvirt/images/{{ item.name }}-vda.qcow2
+    state: absent
+
+- name: Remove {{ item.name }} temporary disk image
+  file:
+    path: /var/lib/libvirt/images/{{ item.name }}-vda.qcow2.temp
+    state: absent
+
+- name: Removing {{ item.name }} from inventory
+  local_action: file path="../inventory/{{ item.name }}" state=absent

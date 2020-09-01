@@ -1,0 +1,13 @@
+<network>
+    <name>{{ lab.network.name }}</name>
+    <domain name='{{ lab.network.name }}.local'/>
+    <forward mode='nat'/>
+
+    <ip address='{{ lab.network.startip }}' netmask='{{ lab.network.netmask }}'>
+        <dhcp>
+	{% for host in lab.hosts %}
+            <host mac='{{ host.macaddr }}' name='{{ host.name }}.{{ lab.network.name }}.local' ip='{{ host.ipaddr }}'/>
+	{% endfor %}
+        </dhcp>
+    </ip>
+</network>

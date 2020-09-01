@@ -1,0 +1,44 @@
+---
+- name: configuring lab environment for tower and satellite
+  gather_facts: no
+  hosts:
+    - playground.stderr.at
+  vars:
+    network:
+      name: tower
+      startip: 192.168.100.1
+      netmask: 255.255.255.0
+    labhosts:
+      - name: towerhost
+        disksize: 100G
+        memory: 8192
+        cpu: 2
+        network: tower
+        macaddr: "52:54:00:01:50:02"
+        ipaddr: "192.168.100.2"
+      - name: idm
+        disksize: 100G
+        memory: 8192
+        cpu: 2
+        network: tower
+        macaddr: "52:54:00:01:50:07"
+        ipaddr: "192.168.100.7"
+      - name: satellite
+        image: rhel-server-7.8-x86_64-kvm.qcow2
+        disksize: 300G
+        memory: 20480
+        cpu: 2
+        network: tower
+        macaddr: "52:54:00:01:50:03"
+        ipaddr: "192.168.100.3"
+      - name: node01
+        image: rhel-server-7.6-x86_64-kvm.qcow2
+        network: tower
+        macaddr: "52:54:00:01:50:04"
+        ipaddr: "192.168.100.4"
+      - name: node02
+        network: tower
+        macaddr: "52:54:00:01:50:05"
+        ipaddr: "192.168.100.5"
+  roles:
+    - lab

@@ -1,0 +1,46 @@
+#!/bin/bash
+
+set -euf -o pipefail
+
+LOGFILE=/var/log/libvirt_network_hook.log
+VPN_IF={{ playground_vpn_ifname }}
+
+network_name="${1:-}"
+network_task="${2:-}"
+bridge_name=$(cat /dev/stdin | awk '/bridge name/ {bridge=gensub(/name=.(.+)./,"\\1","g",$2); print bridge}')
+
+info() {
+  echo "INFO: $1" >> "$LOGFILE"
+}
+
+error() {
+  echo "ERROR: $1" >> "$LOGFILE"
+  exit 1
+}
+
+add_rule() {
+  info "inserting rule for bridge ${bridge_name}"
+  iptables -t filter -I FORWARD 1 -i "$VPN_IF" -o "${bridge_name}" -j ACCEPT
+}
+
+delete_rule() {
+  info "inserting rule for bridge ${bridge_name}"
+  iptables -t filter -D FORWARD -i "$VPN_IF" -o "${bridge_name}" -j ACCEPT
+}
+
+[ -z "$network_name" ] && error "network name is empty"
+[ -z "$network_task" ] && error "network task is empty"
+[ -z "$bridge_name" ] && error "Could not determine bridge name for network ${network_name}"
+
+case "$network_task" in
+  started)
+    add_rule
+  ;;
+  stopped)
+    delete_rule
+  ;;
+  reconnect)
+    delete_rule
+    add_rule
+  ;;
+esac

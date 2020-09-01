@@ -1,0 +1,9 @@
+---
+satellite_admin_username: admin
+satellite_admin_password: redhat
+satellite_pulp_password: redhat
+satellite_activation_key: Satellite
+satellite_qpid_router_password: redhat
+satellite_candlepin_password: redhat
+satellite_db_password: redhat
+satellite_organization: Lab

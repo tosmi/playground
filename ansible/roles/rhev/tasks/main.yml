@@ -1,0 +1,103 @@
+---
+# tasks file for rhev
+- name: Enable additional RHEL 8 repos
+  theforeman.foreman.repository_set:
+    username: "{{ satellite_admin_username }}"
+    password: "{{ satellite_admin_password }}"
+    server_url: "{{ satellite.url}}"
+    validate_certs: false
+    organization: "{{ satellite_organization }}"
+    label: "{{ item }}"
+    all_repositories: yes
+    state: enabled
+  loop:
+    - advanced-virt-for-rhel-8-x86_64-rpms
+    - rhv-4-mgmt-agent-for-rhel-8-x86_64-rpms
+
+- name: Create content views for RHEL 8 RHEV
+  theforeman.foreman.content_view:
+    username: "{{ satellite_admin_username }}"
+    password: "{{ satellite_admin_password }}"
+    server_url: "{{ satellite.url}}"
+    validate_certs: false
+    organization: "{{ satellite_organization }}"
+    name: "CV: RHEL 8 RHEV"
+    repositories:
+      - name: 'Red Hat Virtualization 4 Management Agents for RHEL 8 x86_64 RPMs'
+        product: 'Red Hat Virtualization'
+      - name: 'Advanced Virtualization for RHEL 8 x86_64 RPMs'
+        product: 'Red Hat Enterprise Linux Advanced Virtualization'
+  register: cv_rhel8_rhev
+
+- name: "Publish an initial version of the RHEL 8 RHEV content view"
+  theforeman.foreman.content_view_version:
+    username: "{{ satellite_admin_username }}"
+    password: "{{ satellite_admin_password }}"
+    server_url: "{{ satellite.url}}"
+    validate_certs: false
+    organization: "{{ satellite_organization }}"
+    content_view: "CV: RHEL 8 RHEV"
+    lifecycle_environments:
+      - Library
+  when: cv_rhel8_rhev.changed
+
+- name: "Create a composite content view for RHEL RHEV"
+  theforeman.foreman.content_view:
+    username: "{{ satellite_admin_username }}"
+    password: "{{ satellite_admin_password }}"
+    server_url: "{{ satellite.url}}"
+    validate_certs: false
+    organization: "{{ satellite_organization }}"
+    name: "CCV: RHEL 8 RHEV"
+    composite: true
+    auto_publish: false
+    components:
+      - content_view: "CV: RHEL 8"
+        latest: true
+      - content_view: "CV: RHEL 8 Satellite Tools"
+        latest: true
+      - content_view: "CV: RHEL 8 RHEV"
+        latest: true
+      - content_view: "CV: RHEL 8 Fast Datapath"
+        latest: true
+      - content_view: "CV: RHEL 8 Ansible"
+        latest: true
+  register: ccv_rhev
+
+- name: "Publish an initial version of the RHEV composite content view to Library and Lab"
+  theforeman.foreman.content_view_version:
+    username: "{{ satellite_admin_username }}"
+    password: "{{ satellite_admin_password }}"
+    server_url: "{{ satellite.url}}"
+    validate_certs: false
+    organization: "{{ satellite_organization }}"
+    content_view: "CCV: RHEL 8 RHEV"
+    lifecycle_environments:
+      - Library
+      - Lab
+  when: ccv_rhev.changed
+
+- name: "Create activation key RHEL 8 RHEV"
+  theforeman.foreman.activation_key:
+    username: "{{ satellite_admin_username }}"
+    password: "{{ satellite_admin_password }}"
+    server_url: "{{ satellite.url}}"
+    validate_certs: false
+    organization: "{{ satellite_organization }}"
+    name: "RHEL 8 RHEV"
+    lifecycle_environment: "Lab"
+    content_view: "CCV: RHEL 8 RHEV"
+    subscriptions:
+      - name: "Red Hat Virtualization Manager"
+    content_overrides:
+        - label: fast-datapath-for-rhel-8-x86_64-rpms
+          override: enabled
+        - label: ansible-2.9-for-rhel-8-x86_64-rpms
+          override: enabled
+        - label: satellite-tools-6.7-for-rhel-8-x86_64-rpms
+          override: enabled
+        - label: rhv-4-mgmt-agent-for-rhel-8-x86_64-rpms
+          override: enabled
+        - label: advanced-virt-for-rhel-8-x86_64-rpms
+          override: enabled
+    auto_attach: False

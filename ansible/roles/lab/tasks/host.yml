@@ -1,0 +1,38 @@
+- debug:
+    msg: "Going to create host {{ item.name }} with a {{ item.disksize | default('10') }} disk image, {{ item.cpu | default('1') }} cpu(s) and {{ item.memory | default('2048') }} memory"
+
+- name: check if {{ item.name }} is already defined
+  virt:
+    command: info
+  register: lab_virt_info
+
+- name: Create a host based on on a RHEL image
+  include_tasks: rhel_host.yml
+  when:
+    - item.image != "blank"
+    - item.name not in lab_virt_info
+
+- name: Create a blank host
+  include_tasks: blank_host.yml
+  when:
+    - item.image == "blank"
+    - item.name not in lab_virt_info
+
+- name: restart host if required
+  block:
+    - name: shutdown host {{ item.name }}
+      virt:
+        state: shutdown
+        name: "{{ item.name }}"
+
+    - name: give host time to shut down
+      pause:
+        seconds: 10
+
+    - name: start host {{ item.name }}
+      virt:
+        state: running
+        name: "{{ item.name }}"
+  when:
+    - item.name in lab_virt_info
+    - lab_recreate_network|bool

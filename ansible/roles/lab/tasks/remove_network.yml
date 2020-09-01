@@ -1,0 +1,13 @@
+- name: check if {{ lab.network.name }} is defined
+  virt_net:
+    command: info
+  register: lab_virt_net_info
+
+- name: remove {{ lab.network.name }}
+  block:
+  - name: destroying network {{ lab.network.name }}
+    command: virsh net-destroy "{{ lab.network.name }}"
+
+  - name: undefining network {{ lab.network.name }}
+    command: virsh net-undefine "{{ lab.network.name }}"
+  when: lab.network.name in lab_virt_net_info.networks

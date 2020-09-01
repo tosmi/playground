@@ -1,0 +1,17 @@
+- name: Register new host to RHN
+  delegate_to: "{{ item.ipaddr }}"
+  redhat_subscription:
+    state: present
+    org_id: "{{ rhn.org_id }}"
+    activationkey: "{{ item.activationkey }}"
+  when: rhn.org_id is defined
+
+- name: Register to a satellite with a activation key
+  delegate_to: "{{ item.ipaddr }}"
+  redhat_subscription:
+    state: present
+    activationkey: "{{ item.activationkey }}"
+    server_hostname: "{{ satellite.host }}/rhsm"
+    server_insecure: True
+    org_id: "Lab"
+  when: satellite.host is defined

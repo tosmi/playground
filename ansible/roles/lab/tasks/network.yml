@@ -1,0 +1,30 @@
+- name: Recreate the network {{ lab.network.name }}
+  block:
+  - name: destroy network {{ network.name }}
+    virt_net:
+      command: destroy
+      name: "{{ lab.network.name }}"
+
+  - name: undefine network {{ network.name }}
+    virt_net:
+      command: undefine
+      name: "{{ lab.network.name }}"
+  when:
+    - lab_recreate_network|bool
+
+- name: Define network {{ lab.network.name }}
+  virt_net:
+    command: define
+    autostart: yes
+    name: "{{ lab.network.name }}"
+    xml: '{{ lookup("template", "templates/network.xml.j2") }}'
+
+- name: start network {{ lab.network.name }}
+  virt_net:
+    command: create
+    name: "{{ lab.network.name }}"
+
+- name: enable autostart for network {{ lab.network.name }}
+  virt_net:
+    autostart: yes
+    name: "{{ lab.network.name }}"

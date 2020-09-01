@@ -1,0 +1,89 @@
+- name: set the image to use
+  set_fact:
+    lab_host_image_src: "/var/lib/libvirt/images/{{ item.image | default(lab_default_image) }}"
+
+- name: check if destination image already exists
+  stat:
+    path: "/var/lib/libvirt/images/{{ item.name }}-vda.qcow2"
+  register: destination_image
+
+- name: check rhel images exists
+  stat:
+    path: "{{ lab_host_image_src }}"
+  register: rhel_qcow
+
+- name: fail if RHEL qcow image does not exist
+  fail:
+    msg: "please download requested rhel image to {{ lab_host_image_src }}"
+  when: not rhel_qcow.stat.exists
+
+- name: copy rhel image to image file
+  copy:
+    src: "{{ lab_host_image_src }}"
+    dest: "/var/lib/libvirt/images/{{ item.name }}-vda.qcow2"
+    remote_src: yes
+    force: no
+
+- name: resize disk
+  block:
+  - name: resize disk to {{ item.disksize }}GB
+    command: qemu-img resize "/var/lib/libvirt/images/{{ item.name }}-vda.qcow2"  "{{ item.disksize }}"
+
+  - name: copy image to temporary image file
+    copy:
+      src: "/var/lib/libvirt/images/{{ item.name }}-vda.qcow2"
+      dest: "/var/lib/libvirt/images/{{ item.name }}-vda.qcow2.temp"
+      remote_src: yes
+      force: no
+
+  - name: resize the destination image file
+    command: virt-resize --expand /dev/sda1 "/var/lib/libvirt/images/{{ item.name }}-vda.qcow2.temp" "/var/lib/libvirt/images/{{ item.name }}-vda.qcow2"
+
+  - name: remove the temporary disk image
+    file:
+      path: "/var/lib/libvirt/images/{{ item.name }}-vda.qcow2.temp"
+      state: absent
+  when:
+    - item.disksize is defined
+    - not destination_image.stat.exists
+
+- name: Customize vm
+  command: >
+    /usr/bin/virt-customize
+    -a /var/lib/libvirt/images/{{ item.name }}-vda.qcow2
+    --root-password password:redhat
+    --uninstall cloud-init
+    --hostname {{ item.name }}
+    --ssh-inject root:string:"{{ lab.ssh_public_key }}"
+    --selinux-relabel
+
+- name: Install
+  command: >
+    /usr/bin/virt-install
+    --name "{{ item.name }}"
+    --memory "{{ item.memory | default('2048') }}"
+    --vcpus "{{ item.cpu | default('1') }}"
+    --disk "/var/lib/libvirt/images/{{ item.name }}-vda.qcow2"
+    --import
+    --os-variant rhel8.1
+    --noautoconsole
+    --network "network={{ lab.network.name }},mac={{ item.macaddr }}"
+  when:
+    - lab.network.type == "nat"
+
+- name: install {{ item.name }} with virt-install and bridge networking
+  command: >
+    /usr/bin/virt-install
+    --name {{ item.name }}
+    --memory {{ item.memory | default('2048') }}
+    --vcpus {{ item.cpu | default('1') }}
+    --disk /var/lib/libvirt/images/{{ item.name }}-vda.qcow2
+    --import
+    --os-variant rhel8.1
+    --noautoconsole
+    --network "bridge={{ lab.network.name }},mac={{ item.macaddr }}"
+  when:
+    - lab.network.type == "bridge"
+
+- include_tasks: inventory.yml
+- include_tasks: register.yml

@@ -1,0 +1,37 @@
+- name: start a cluster
+  hosts: localhost
+  become: yes
+  gather_facts: no
+  tasks:
+    - name: start the bastion host
+      virt:
+        name: bastion
+        state: running
+
+    - name: start control plane nodes
+      virt:
+        name: "{{ item }}"
+        state: running
+      loop:
+        - master01
+        - master02
+        - master03
+
+    - name: wait for control plane to come up
+      uri:
+        url: https://api.ocp.lan.stderr.at:6443/healthz
+        validate_certs: no
+      register: _result
+      until: _result.status == 200
+      retries: 720 # 720 * 5 seconds = 1hour (60*60/5)
+      delay: 5 # Every 5 seconds
+
+    - name: start worker nodes
+      virt:
+        name: "{{ item }}"
+        state: running
+      loop:
+        - infra01
+        - infra02
+        - worker01
+        - worker02

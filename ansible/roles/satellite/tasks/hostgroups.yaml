@@ -1,0 +1,13 @@
+---
+- name: "Create a RHEV Hostgroup"
+  hostgroup:
+    name: "Lab RHEV"
+    architecture: "x86_64"
+    lifecycle_environment: "Lab"
+    operatingsystem: "RedHat 8.2"
+    medium: ""
+    ptable: "Partition_table_name"
+    server_url: "https://foreman.example.com"
+    username: "admin"
+    password: "secret"
+    state: present

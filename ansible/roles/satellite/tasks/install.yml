@@ -1,0 +1,42 @@
+- name: Register to Red Hat Satellite pool
+  redhat_subscription:
+    state: present
+    org_id: "{{ satellite.org_id }}"
+    activationkey: "{{ satellite.activation_key }}"
+    pool: '^Red Hat Satellite'
+    syspurpose:
+      usage: "Red Hat Lab Satellite"
+      sync: true
+
+- name: Enable required repos
+  rhsm_repository:
+    name:
+      - rhel-7-server-rpms
+      - rhel-7-server-satellite-6.7-rpms
+      - rhel-7-server-satellite-maintenance-6-rpms
+      - rhel-server-rhscl-7-rpms
+      - rhel-7-server-ansible-2.8-rpms
+    state: enabled
+
+- name: Install satellite package
+  package:
+    state: present
+    name:
+      - satellite
+      - chrony
+      - sos
+      - python2-apypie
+
+- name: Enable chrony
+  service:
+    name: chronyd
+    state: started
+    enabled: yes
+
+- name: Deploy answer file from template
+  template:
+    src: lab-satellite-answers.yaml.j2
+    dest: /etc/foreman-installer/scenarios.d/satellite-answers.yaml
+
+- name: Install satellite software
+  command: satellite-installer --scenario satellite

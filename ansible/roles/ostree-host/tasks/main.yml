@@ -1,0 +1,37 @@
+---
+- name: install required packages
+  package:
+    name:
+      - git
+      - rpm-ostree
+      - ostree
+
+- name: create directory for storing ostree checkout
+  file:
+    path: /data
+    mode: '0755'
+    owner: root
+    group: root
+    state: directory
+
+- name: clone the ostree config repository
+  git:
+    accept_hostkey: yes
+    repo: 'https://gitlab.com/tosmi/workstation-ostree-config.git'
+    dest: /data/workstation-ostree-config
+
+- name: create repo directory for storing ostree
+  file:
+    path: /data/repo
+    mode: '0755'
+    owner: root
+    group: root
+    state: directory
+
+- name: create cache directory for storing ostree cache
+  file:
+    path: /data/cache
+    mode: '0755'
+    owner: root
+    group: root
+    state: directory

@@ -1,0 +1,28 @@
+- name: Creating new lab environement {{ lab.name }}
+  block:
+  - name: Creating network
+    include_tasks: network.yml
+    when:
+      - lab.network is defined
+      - lab.network.type == "nat"
+
+  - name: Creating lab hosts
+    include_tasks: host.yml
+    with_items: "{{ lab.hosts }}"
+    when: lab.hosts is defined
+
+  when: not lab_destroy|bool
+
+- name: Removing lab environment {{ lab.name }}
+  block:
+  - name: removing hosts
+    include_tasks: remove_host.yml
+    with_items: "{{ lab.hosts }}"
+    when: lab.hosts is defined
+
+  - name: removing network
+    include_tasks: remove_network.yml
+    when:
+      - lab.network is defined
+      - lab.network.type == "nat"
+  when: lab_destroy|bool

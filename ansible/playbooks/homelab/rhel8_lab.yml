@@ -1,0 +1,40 @@
+---
+- name: create lab network and hosts
+  gather_facts: no
+  become: yes
+  hosts:
+    - localhost
+  vars:
+    rhn:
+      org_id: ""
+    lab:
+      ssh_public_key: ""
+      name: infra
+      network:
+        type: nat
+        name: rhel8
+        startip: 192.168.125.1
+        netmask: 255.255.255.0
+      hosts:
+        - name: main
+          network: rhel8
+          macaddr: "52:54:00:08:50:02"
+          ipaddr: "192.168.125.2"
+          disksize: 50G
+          memory: 4096
+          cpu: 2
+          register: yes
+          activationkey: Satellite
+          image: rhel-8.2-update-2-x86_64-kvm.qcow2
+        - name: client
+          network: rhel8
+          macaddr: "52:54:00:08:50:03"
+          ipaddr: "192.168.125.3"
+          disksize: 20G
+          memory: 4096
+          cpu: 2
+          register: yes
+          activationkey: Satellite
+          image: rhel-8.2-update-2-x86_64-kvm.qcow2
+  roles:
+    - lab

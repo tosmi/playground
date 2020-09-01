@@ -1,0 +1,10 @@
+---
+lab_destroy: false
+lab_default_image: rhel-8.2-update-2-x86_64-kvm.qcow2
+
+lab_recreate_network: false
+
+lab_ssh_proxy: ""
+
+lab_rhn_register: false
+lab_rhn_org_id: ""

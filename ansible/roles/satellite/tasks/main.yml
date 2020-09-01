@@ -1,0 +1,47 @@
+---
+# tasks file for satellite
+# - name: Install satellite
+#   include_tasks: install.yml
+
+- name: Copy manifest and upload to satellite
+  block:
+  - name: Copy downloaded manifest to satellite host
+    copy:
+      src: "{{ satellite_manifest_path }}"
+      dest: /tmp/manifest.zip
+
+  - name: "Upload satellite manifest"
+    theforeman.foreman.subscription_manifest:
+      username: "{{ satellite_admin_username }}"
+      password: "{{ satellite_admin_password }}"
+      server_url: "{{ satellite.url}}"
+      validate_certs: false
+      organization: "{{ satellite_organization }}"
+      state: present
+      manifest_path: "/tmp/manifest.zip"
+  when: satellite_manifest_path is defined
+
+- name: "Create RedHat 8.2 Operating System"
+  theforeman.foreman.operatingsystem:
+    username: "{{ satellite_admin_username }}"
+    password: "{{ satellite_admin_password }}"
+    server_url: "{{ satellite.url}}"
+    validate_certs: false
+    name: RedHat
+    family: Redhat
+    major: "8"
+    minor: "2"
+    password_hash: SHA256
+    state: present
+
+- name: Configure repositories
+  include_tasks: repositories.yml
+
+- name: Configure repository sync
+  include_tasks: sync.yml
+
+- name: Configure content views
+  include_tasks: contentviews.yml
+
+- name: Configure activation keys
+  include_tasks: activationkeys.yml

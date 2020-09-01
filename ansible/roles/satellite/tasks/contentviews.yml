@@ -1,0 +1,196 @@
+---
+- name: "Add lifecycle environments"
+  theforeman.foreman.lifecycle_environment:
+    username: "{{ satellite_admin_username }}"
+    password: "{{ satellite_admin_password }}"
+    server_url: "{{ satellite.url}}"
+    validate_certs: false
+    organization: "{{ satellite_organization }}"
+    name: "Lab"
+    label: "lab"
+    prior: "Library"
+    description: "The Lab environment"
+    state: "present"
+
+- name: Create content views for RHEL 8 kickstart
+  theforeman.foreman.content_view:
+    username: "{{ satellite_admin_username }}"
+    password: "{{ satellite_admin_password }}"
+    server_url: "{{ satellite.url}}"
+    validate_certs: false
+    organization: "{{ satellite_organization }}"
+    name: "CV: RHEL 8 kickstart"
+    repositories:
+      - name: 'Red Hat Enterprise Linux 8 for x86_64 - AppStream Kickstart 8.2'
+        product: 'Red Hat Enterprise Linux for x86_64'
+      - name: 'Red Hat Enterprise Linux 8 for x86_64 - BaseOS Kickstart 8.2'
+        product: 'Red Hat Enterprise Linux for x86_64'
+  register: cv_rhel8kickstart
+
+- name: "Publish an initial version of the RHEL 8 kickstart content view"
+  theforeman.foreman.content_view_version:
+    username: "{{ satellite_admin_username }}"
+    password: "{{ satellite_admin_password }}"
+    server_url: "{{ satellite.url}}"
+    validate_certs: false
+    organization: "{{ satellite_organization }}"
+    content_view: "CV: RHEL 8 kickstart"
+    lifecycle_environments:
+      - Library
+  when: cv_rhel8kickstart.changed
+
+- name: Create content views for RHEL 8 (baseos + appstream)
+  theforeman.foreman.content_view:
+    username: "{{ satellite_admin_username }}"
+    password: "{{ satellite_admin_password }}"
+    server_url: "{{ satellite.url}}"
+    validate_certs: false
+    organization: "{{ satellite_organization }}"
+    name: "CV: RHEL 8"
+    repositories:
+      - name: 'Red Hat Enterprise Linux 8 for x86_64 - AppStream RPMs 8'
+        product: 'Red Hat Enterprise Linux for x86_64'
+      - name: 'Red Hat Enterprise Linux 8 for x86_64 - BaseOS RPMs 8'
+        product: 'Red Hat Enterprise Linux for x86_64'
+  register: cv_rhel8
+
+- name: "Publish an initial version of the RHEL 8 content view"
+  theforeman.foreman.content_view_version:
+    username: "{{ satellite_admin_username }}"
+    password: "{{ satellite_admin_password }}"
+    server_url: "{{ satellite.url}}"
+    validate_certs: false
+    organization: "{{ satellite_organization }}"
+    content_view: "CV: RHEL 8"
+    lifecycle_environments:
+      - Library
+  when: cv_rhel8.changed
+
+- name: Create content view for RHEL 8 satellite tools
+  theforeman.foreman.content_view:
+    username: "{{ satellite_admin_username }}"
+    password: "{{ satellite_admin_password }}"
+    server_url: "{{ satellite.url}}"
+    validate_certs: false
+    organization: "{{ satellite_organization }}"
+    name: "CV: RHEL 8 Satellite Tools"
+    repositories:
+      - name: 'Red Hat Satellite Tools 6.7 for RHEL 8 x86_64 RPMs'
+        product: 'Red Hat Enterprise Linux for x86_64'
+  register: cv_rhel8_sattools
+
+- name: "Publish an initial version of the RHEL 8 kickstart content view"
+  theforeman.foreman.content_view_version:
+    username: "{{ satellite_admin_username }}"
+    password: "{{ satellite_admin_password }}"
+    server_url: "{{ satellite.url}}"
+    validate_certs: false
+    organization: "{{ satellite_organization }}"
+    content_view: "CV: RHEL 8 Satellite Tools"
+    lifecycle_environments:
+      - Library
+  when: cv_rhel8_sattools.changed
+
+- name: Create content views for RHEL 8 fast datapath
+  theforeman.foreman.content_view:
+    username: "{{ satellite_admin_username }}"
+    password: "{{ satellite_admin_password }}"
+    server_url: "{{ satellite.url}}"
+    validate_certs: false
+    organization: "{{ satellite_organization }}"
+    name: "CV: RHEL 8 Fast Datapath"
+    repositories:
+      - name: 'Fast Datapath for RHEL 8 x86_64 RPMs'
+        product: 'Red Hat Enterprise Linux Fast Datapath'
+  register: cv_rhel8_datapath
+
+- name: "Publish an initial version of the RHEL 8 Fast Datapath content view"
+  theforeman.foreman.content_view_version:
+    username: "{{ satellite_admin_username }}"
+    password: "{{ satellite_admin_password }}"
+    server_url: "{{ satellite.url}}"
+    validate_certs: false
+    organization: "{{ satellite_organization }}"
+    content_view: "CV: RHEL 8 Fast Datapath"
+    lifecycle_environments:
+      - Library
+  when: cv_rhel8_datapath.changed
+
+- name: Create content views for RHEL 8 Ansible
+  theforeman.foreman.content_view:
+    username: "{{ satellite_admin_username }}"
+    password: "{{ satellite_admin_password }}"
+    server_url: "{{ satellite.url}}"
+    validate_certs: false
+    organization: "{{ satellite_organization }}"
+    name: "CV: RHEL 8 Ansible"
+    repositories:
+      - name: 'Red Hat Ansible Engine 2.9 for RHEL 8 x86_64 RPMs'
+        product: 'Red Hat Ansible Engine'
+  register: cv_rhel8_ansible
+
+- name: "Publish an initial version of the RHEL 8 Ansible content view"
+  theforeman.foreman.content_view_version:
+    username: "{{ satellite_admin_username }}"
+    password: "{{ satellite_admin_password }}"
+    server_url: "{{ satellite.url}}"
+    validate_certs: false
+    organization: "{{ satellite_organization }}"
+    content_view: "CV: RHEL 8 Ansible"
+    lifecycle_environments:
+      - Library
+  when: cv_rhel8_ansible.changed
+
+- name: "Create a composite content view for RHEL 8"
+  theforeman.foreman.content_view:
+    username: "{{ satellite_admin_username }}"
+    password: "{{ satellite_admin_password }}"
+    server_url: "{{ satellite.url}}"
+    validate_certs: false
+    organization: "{{ satellite_organization }}"
+    name: "CCV: RHEL 8 RHEV"
+    composite: true
+    auto_publish: false
+    components:
+      - content_view: "CV: RHEL 8"
+        latest: true
+      - content_view: "CV: RHEL 8 Satellite Tools"
+        latest: true
+      - content_view: "CV: RHEL 8 Ansible"
+        latest: true
+  register: ccv_rhev
+
+- name: "Create a composite content view for RHEL 8"
+  theforeman.foreman.content_view:
+    username: "{{ satellite_admin_username }}"
+    password: "{{ satellite_admin_password }}"
+    server_url: "{{ satellite.url}}"
+    validate_certs: false
+    organization: "{{ satellite_organization }}"
+    name: "CCV: RHEL 8"
+    composite: true
+    auto_publish: false
+    components:
+      - content_view: "CV: RHEL 8"
+        latest: true
+      - content_view: "CV: RHEL 8 Satellite Tools"
+        latest: true
+      - content_view: "CV: RHEL 8 Fast Datapath"
+        latest: true
+      - content_view: "CV: RHEL 8 Ansible"
+        latest: true
+  register: ccv_rhel8
+
+- name: "Publish an initial version of the RHEL 8 composite content view"
+  theforeman.foreman.content_view_version:
+    username: "{{ satellite_admin_username }}"
+    password: "{{ satellite_admin_password }}"
+    server_url: "{{ satellite.url}}"
+    validate_certs: false
+    organization: "{{ satellite_organization }}"
+    content_view: "CCV: RHEL 8"
+    lifecycle_environments:
+      - Library
+      - Lab
+  when: ccv_rhel8.changed
+...
