@@ -1,9 +1,9 @@
 
 # Table of Contents
 
-1.  [Backup / restore tests](#org9c090e2)
-    1.  [first test: Replacing unhealth member](#orgc741b3b)
-    2.  [second test: Restoring to a previous cluster state](#org3586833)
+1.  [Backup / restore tests](#org4ed137d)
+    1.  [first test: Replacing unhealth member](#orgf1f3ba7)
+    2.  [second test: Restoring to a previous cluster state](#org2aabf82)
 
 We tested 2 scenarios:
 
@@ -11,7 +11,7 @@ We tested 2 scenarios:
 -   losing 2 out of 3 control plane hosts
 
 
-<a id="org9c090e2"></a>
+<a id="org4ed137d"></a>
 
 # Backup / restore tests
 
@@ -26,7 +26,7 @@ collect etcd member list, just to be sure
     b061c3a7cd643408, started, master01, https://10.0.0.182:2380, https://10.0.0.182:2379, false
 
 
-<a id="orgc741b3b"></a>
+<a id="orgf1f3ba7"></a>
 
 ## first test: [Replacing unhealth member](//docs.openshift.com/container-platform/4.5/backup_and_restore/replacing-unhealthy-etcd-member.html#replacing-unhealthy-etcd-member)
 
@@ -130,7 +130,7 @@ pods are starting up on master03 but no pod definition for etcd. after 2-3 minut
 etcd done, kube-apiserver is still progressing
 
 
-<a id="org3586833"></a>
+<a id="org2aabf82"></a>
 
 ## second test: [Restoring to a previous cluster state](https://docs.openshift.com/container-platform/4.5/backup_and_restore/disaster_recovery/scenario-2-restoring-cluster-state.html)
 
@@ -156,7 +156,7 @@ etcd endpoint status
     | https://10.0.0.184:2379 | 866b1732ab61f1d6 |   3.4.9 |   78 MB |      true |      false |        75 |    1571408 |            1571408 |        |
     +-------------------------+------------------+---------+---------+-----------+------------+-----------+------------+--------------------+--------+
 
-created backup of master01 and rsynced files to other host
+created backup of master01 and rsynced files to bastion host, just to be sure
 
     /usr/local/bin/cluster-backup.sh /var/home/core/assets/
 

@@ -173,7 +173,7 @@ ETCDCTL_API=3 nsenter -n -p -m -t 835256 -- etcdctl endpoint status --write-out=
 +-------------------------+------------------+---------+---------+-----------+------------+-----------+------------+--------------------+--------+
 #+end_src
 
-created backup of master01 and rsynced files to other host
+created backup of master01 and rsynced files to bastion host, just to be sure
 
 #+begin_src
 /usr/local/bin/cluster-backup.sh /var/home/core/assets/
