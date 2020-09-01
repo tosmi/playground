@@ -24,6 +24,10 @@
           register: yes
           activationkey: "RHEL 8"
           image: rhel-8.2-update-2-x86_64-kvm.qcow2
+          additional_disks:
+            - name: bastion-vdb
+              target: vdb
+              size: 200G
         - name: bootstrap
           network: bridge0
           macaddr: "52:54:00:01:01:81"
