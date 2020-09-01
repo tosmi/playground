@@ -1,29 +1,17 @@
 
 # Table of Contents
 
-1.  [tags: openshift](#org16f9a84)
-2.  [ALPS Presentations](#orgd861fc0)
-3.  [Backup / restore tests](#orgfef60fa)
-    1.  [first test replacing unhealth member](#orgcfc860d)
-    2.  [second test Restoring to a previous cluster state](#org297cfe2)
+1.  [Backup / restore tests](#orgb7945d3)
+    1.  [first test replacing unhealth member](#org78e1979)
+    2.  [second test Restoring to a previous cluster state](#org5e12e80)
+
+We tested 2 scenarios:
+
+-   losing a single control plane host
+-   losing 2 out of 3 control plane hosts
 
 
-
-<a id="org16f9a84"></a>
-
-# tags: [openshift](20200804121522-openshift.md)
-
-
-<a id="orgd861fc0"></a>
-
-# ALPS Presentations
-
--   [Openshift Desaster Recovery](https://docs.google.com/presentation/d/1zajNHICChqsVK834U9sUO3U02GS3X-SYorJoTXBY6wE/edit#slide=id.g80c0345f91_0_0)
--   [OpenShift Backup Restore enablement](https://docs.google.com/presentation/d/1T2ODaGHQ3YG9-ts-G-du7WnKSPNllRbRtw3Nzdz8swk/edit#slide=id.g72f11627fc_3_907)
--   [RBS Backup Restore and Namespaces workshop](https://docs.google.com/presentation/d/14Q0YCZgdtEpECUAzQQDVmSzga7pCGhAfBvrUG2LlRHI/edit#slide=id.p)
-
-
-<a id="orgfef60fa"></a>
+<a id="orgb7945d3"></a>
 
 # Backup / restore tests
 
@@ -37,7 +25,7 @@ collect etcd member list, just to be sure
     b061c3a7cd643408, started, master01, https://10.0.0.182:2380, https://10.0.0.182:2379, false
 
 
-<a id="orgcfc860d"></a>
+<a id="org78e1979"></a>
 
 ## first test [replacing unhealth member](https://docs.openshift.com/container-platform/4.5/backup_and_restore/replacing-unhealthy-etcd-member.html#replacing-unhealthy-etcd-member)
 
@@ -138,7 +126,7 @@ pods are starting up on master03 but no pod definition for etcd. after 2-3 minut
 etcd done, kube-apiserver is still progressing
 
 
-<a id="org297cfe2"></a>
+<a id="org5e12e80"></a>
 
 ## second test [Restoring to a previous cluster state](https://docs.openshift.com/container-platform/4.5/backup_and_restore/disaster_recovery/scenario-2-restoring-cluster-state.html)
 
