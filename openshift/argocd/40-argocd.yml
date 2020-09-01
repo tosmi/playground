@@ -4,6 +4,9 @@ metadata:
   name: main-argocd
   namespace: argocd
 spec:
+  server:
+    route:
+      enabled: true
   dex:
     image: quay.io/redhat-cop/dex
     openShiftOAuth: true
