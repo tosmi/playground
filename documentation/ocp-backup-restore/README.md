@@ -1,9 +1,9 @@
 
 # Table of Contents
 
-1.  [Backup / restore tests](#orga3af5fa)
-    1.  [first test: Replacing unhealth member](#orgb13e052)
-    2.  [second test: Restoring to a previous cluster state](#org2e96265)
+1.  [Backup / restore tests](#org4d21a90)
+    1.  [first test: Replacing unhealth member](#org8dbcf1e)
+    2.  [second test: Restoring to a previous cluster state](#orgf16176d)
 
 We tested 2 scenarios:
 
@@ -11,7 +11,7 @@ We tested 2 scenarios:
 -   losing 2 out of 3 control plane hosts
 
 
-<a id="orga3af5fa"></a>
+<a id="org4d21a90"></a>
 
 # Backup / restore tests
 
@@ -26,7 +26,7 @@ collect etcd member list, just to be sure
     b061c3a7cd643408, started, master01, https://10.0.0.182:2380, https://10.0.0.182:2379, false
 
 
-<a id="orgb13e052"></a>
+<a id="org8dbcf1e"></a>
 
 ## first test: [Replacing unhealth member](//docs.openshift.com/container-platform/4.5/backup_and_restore/replacing-unhealthy-etcd-member.html#replacing-unhealthy-etcd-member)
 
@@ -130,9 +130,13 @@ pods are starting up on master03 but no pod definition for etcd. after 2-3 minut
 etcd done, kube-apiserver is still progressing
 
 
-<a id="org2e96265"></a>
+<a id="orgf16176d"></a>
 
 ## second test: [Restoring to a previous cluster state](https://docs.openshift.com/container-platform/4.5/backup_and_restore/disaster_recovery/scenario-2-restoring-cluster-state.html)
+
+WARNING: This actually deviates from the official documentation. We
+completely wipe 2 of the 3 master nodes and try to restore from this
+situation.
 
 etcd member list:
 

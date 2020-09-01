@@ -147,6 +147,10 @@ etcd done, kube-apiserver is still progressing
 
 ** second test: [[https://docs.openshift.com/container-platform/4.5/backup_and_restore/disaster_recovery/scenario-2-restoring-cluster-state.html][Restoring to a previous cluster state]]
 
+WARNING: This actually deviates from the official documentation. We
+completely wipe 2 of the 3 master nodes and try to restore from this
+situation.
+
 etcd member list:
 
 #+begin_src
