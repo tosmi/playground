@@ -12,6 +12,7 @@ collect etcd member list, just to be sure
 
 #+begin_src sh
 oc project openshift-etcd
+oc rsh etcd-master01
 etctctl member list
 #+end_src
 
@@ -21,8 +22,7 @@ fc527668531fd0, started, master02, https://10.0.0.183:2380, https://10.0.0.183:2
 b061c3a7cd643408, started, master01, https://10.0.0.182:2380, https://10.0.0.182:2379, false
 #+end_src
 
-
-** first test [[https://docs.openshift.com/container-platform/4.5/backup_and_restore/replacing-unhealthy-etcd-member.html#replacing-unhealthy-etcd-member][replacing unhealth member]]
+** first test: [[Https://docs.openshift.com/container-platform/4.5/backup_and_restore/replacing-unhealthy-etcd-member.html#replacing-unhealthy-etcd-member][Replacing unhealth member]]
 
 shutdown and destroy master03
 
@@ -33,7 +33,10 @@ virsh destroy master03
 list etcd members
 
 #+begin_src
-ETCDCTL_API=3 nsenter -n -p -m -t 2494 -- etcdctl member list --write-out=table --endpoints=https://10.0.0.182:2379,https://10.0.0.183:2379,https://10.0.0.184:2379 --cert=/etc/kubernetes/static-pod-certs/secrets/etcd-all-serving/etcd-serving-master01.crt --key=/etc/kubernetes/static-pod-certs/secrets/etcd-all-serving/etcd-serving-master01.key --cacert=/etc/kubernetes/static-pod-certs/configmaps/etcd-serving-ca/ca-bundle.crt
+ssh root@master01
+crictl ps |grep etcd
+crictl inspect <container id> |grep pid
+ETCDCTL_API=3 nsenter -n -p -m -t <pid> -- etcdctl member list --write-out=table --endpoints=https://10.0.0.182:2379,https://10.0.0.183:2379,https://10.0.0.184:2379 --cert=/etc/kubernetes/static-pod-certs/secrets/etcd-all-serving/etcd-serving-master01.crt --key=/etc/kubernetes/static-pod-certs/secrets/etcd-all-serving/etcd-serving-master01.key --cacert=/etc/kubernetes/static-pod-certs/configmaps/etcd-serving-ca/ca-bundle.crt
 #+end_src
 
 #+begin_src
@@ -142,7 +145,7 @@ pods are starting up on master03 but no pod definition for etcd. after 2-3 minut
 
 etcd done, kube-apiserver is still progressing
 
-** second test [[https://docs.openshift.com/container-platform/4.5/backup_and_restore/disaster_recovery/scenario-2-restoring-cluster-state.html][Restoring to a previous cluster state]]
+** second test: [[https://docs.openshift.com/container-platform/4.5/backup_and_restore/disaster_recovery/scenario-2-restoring-cluster-state.html][Restoring to a previous cluster state]]
 
 etcd member list:
 

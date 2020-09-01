@@ -1,9 +1,9 @@
 
 # Table of Contents
 
-1.  [Backup / restore tests](#org93bc24d)
-    1.  [first test replacing unhealth member](#orgeab6d39)
-    2.  [second test Restoring to a previous cluster state](#org232bf3f)
+1.  [Backup / restore tests](#org9c090e2)
+    1.  [first test: Replacing unhealth member](#orgc741b3b)
+    2.  [second test: Restoring to a previous cluster state](#org3586833)
 
 We tested 2 scenarios:
 
@@ -11,13 +11,14 @@ We tested 2 scenarios:
 -   losing 2 out of 3 control plane hosts
 
 
-<a id="org93bc24d"></a>
+<a id="org9c090e2"></a>
 
 # Backup / restore tests
 
 collect etcd member list, just to be sure
 
     oc project openshift-etcd
+    oc rsh etcd-master01
     etctctl member list
 
     fc527668531fd0, started, master02, https://10.0.0.183:2380, https://10.0.0.183:2379, false
@@ -25,9 +26,9 @@ collect etcd member list, just to be sure
     b061c3a7cd643408, started, master01, https://10.0.0.182:2380, https://10.0.0.182:2379, false
 
 
-<a id="orgeab6d39"></a>
+<a id="orgc741b3b"></a>
 
-## first test [replacing unhealth member](https://docs.openshift.com/container-platform/4.5/backup_and_restore/replacing-unhealthy-etcd-member.html#replacing-unhealthy-etcd-member)
+## first test: [Replacing unhealth member](//docs.openshift.com/container-platform/4.5/backup_and_restore/replacing-unhealthy-etcd-member.html#replacing-unhealthy-etcd-member)
 
 shutdown and destroy master03
 
@@ -35,7 +36,10 @@ shutdown and destroy master03
 
 list etcd members
 
-    ETCDCTL_API=3 nsenter -n -p -m -t 2494 -- etcdctl member list --write-out=table --endpoints=https://10.0.0.182:2379,https://10.0.0.183:2379,https://10.0.0.184:2379 --cert=/etc/kubernetes/static-pod-certs/secrets/etcd-all-serving/etcd-serving-master01.crt --key=/etc/kubernetes/static-pod-certs/secrets/etcd-all-serving/etcd-serving-master01.key --cacert=/etc/kubernetes/static-pod-certs/configmaps/etcd-serving-ca/ca-bundle.crt
+    ssh root@master01
+    crictl ps |grep etcd
+    crictl inspect <container id> |grep pid
+    ETCDCTL_API=3 nsenter -n -p -m -t <pid> -- etcdctl member list --write-out=table --endpoints=https://10.0.0.182:2379,https://10.0.0.183:2379,https://10.0.0.184:2379 --cert=/etc/kubernetes/static-pod-certs/secrets/etcd-all-serving/etcd-serving-master01.crt --key=/etc/kubernetes/static-pod-certs/secrets/etcd-all-serving/etcd-serving-master01.key --cacert=/etc/kubernetes/static-pod-certs/configmaps/etcd-serving-ca/ca-bundle.crt
 
     +------------------+---------+----------+-------------------------+-------------------------+------------+
     |        ID        | STATUS  |   NAME   |       PEER ADDRS        |      CLIENT ADDRS       | IS LEARNER |
@@ -126,9 +130,9 @@ pods are starting up on master03 but no pod definition for etcd. after 2-3 minut
 etcd done, kube-apiserver is still progressing
 
 
-<a id="org232bf3f"></a>
+<a id="org3586833"></a>
 
-## second test [Restoring to a previous cluster state](https://docs.openshift.com/container-platform/4.5/backup_and_restore/disaster_recovery/scenario-2-restoring-cluster-state.html)
+## second test: [Restoring to a previous cluster state](https://docs.openshift.com/container-platform/4.5/backup_and_restore/disaster_recovery/scenario-2-restoring-cluster-state.html)
 
 etcd member list:
 
