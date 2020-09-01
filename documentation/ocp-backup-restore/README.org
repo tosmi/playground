@@ -24,13 +24,13 @@ b061c3a7cd643408, started, master01, https://10.0.0.182:2380, https://10.0.0.182
 
 ** first test [[https://docs.openshift.com/container-platform/4.5/backup_and_restore/replacing-unhealthy-etcd-member.html#replacing-unhealthy-etcd-member][replacing unhealth member]]
 
-- shutdown and destroy master03
+shutdown and destroy master03
 
 #+begin_src sh
 virsh destroy master03
 #+end_src
 
-- list etcd members
+list etcd members
 
 #+begin_src
 ETCDCTL_API=3 nsenter -n -p -m -t 2494 -- etcdctl member list --write-out=table --endpoints=https://10.0.0.182:2379,https://10.0.0.183:2379,https://10.0.0.184:2379 --cert=/etc/kubernetes/static-pod-certs/secrets/etcd-all-serving/etcd-serving-master01.crt --key=/etc/kubernetes/static-pod-certs/secrets/etcd-all-serving/etcd-serving-master01.key --cacert=/etc/kubernetes/static-pod-certs/configmaps/etcd-serving-ca/ca-bundle.crt

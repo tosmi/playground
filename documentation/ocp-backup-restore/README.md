@@ -1,9 +1,9 @@
 
 # Table of Contents
 
-1.  [Backup / restore tests](#orgb7945d3)
-    1.  [first test replacing unhealth member](#org78e1979)
-    2.  [second test Restoring to a previous cluster state](#org5e12e80)
+1.  [Backup / restore tests](#org93bc24d)
+    1.  [first test replacing unhealth member](#orgeab6d39)
+    2.  [second test Restoring to a previous cluster state](#org232bf3f)
 
 We tested 2 scenarios:
 
@@ -11,7 +11,7 @@ We tested 2 scenarios:
 -   losing 2 out of 3 control plane hosts
 
 
-<a id="orgb7945d3"></a>
+<a id="org93bc24d"></a>
 
 # Backup / restore tests
 
@@ -25,15 +25,15 @@ collect etcd member list, just to be sure
     b061c3a7cd643408, started, master01, https://10.0.0.182:2380, https://10.0.0.182:2379, false
 
 
-<a id="org78e1979"></a>
+<a id="orgeab6d39"></a>
 
 ## first test [replacing unhealth member](https://docs.openshift.com/container-platform/4.5/backup_and_restore/replacing-unhealthy-etcd-member.html#replacing-unhealthy-etcd-member)
 
--   shutdown and destroy master03
+shutdown and destroy master03
 
     virsh destroy master03
 
--   list etcd members
+list etcd members
 
     ETCDCTL_API=3 nsenter -n -p -m -t 2494 -- etcdctl member list --write-out=table --endpoints=https://10.0.0.182:2379,https://10.0.0.183:2379,https://10.0.0.184:2379 --cert=/etc/kubernetes/static-pod-certs/secrets/etcd-all-serving/etcd-serving-master01.crt --key=/etc/kubernetes/static-pod-certs/secrets/etcd-all-serving/etcd-serving-master01.key --cacert=/etc/kubernetes/static-pod-certs/configmaps/etcd-serving-ca/ca-bundle.crt
 
@@ -126,7 +126,7 @@ pods are starting up on master03 but no pod definition for etcd. after 2-3 minut
 etcd done, kube-apiserver is still progressing
 
 
-<a id="org5e12e80"></a>
+<a id="org232bf3f"></a>
 
 ## second test [Restoring to a previous cluster state](https://docs.openshift.com/container-platform/4.5/backup_and_restore/disaster_recovery/scenario-2-restoring-cluster-state.html)
 
