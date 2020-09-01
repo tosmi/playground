@@ -36,3 +36,10 @@
   when:
     - item.name in lab_virt_info
     - lab_recreate_network|bool
+
+- name: add additional disks to guest
+  include_tasks: add_disk.yml
+  loop: "{{ item.additional_disks }}"
+  loop_control:
+    loop_var: disk
+  when: item.additional_disks is defined

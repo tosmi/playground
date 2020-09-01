@@ -1,0 +1,23 @@
+---
+- name: Check if blank disk images already exist
+  stat:
+    path: "/var/lib/libvirt/images/{{ disk.name }}.qcow2"
+  register: additional_diskimage
+
+- name: Create and format blank disk image
+  block:
+    - name: Create disk images for {{ disk.name}}
+      command: /usr/bin/qemu-img create -f qcow2 "/var/lib/libvirt/images/{{ disk.name }}.qcow2" "{{ disk.size }}"
+
+    - name: Format disk images for {{ disk.name }}
+      command: /usr/bin/virt-format --format=qcow2 -a "/var/lib/libvirt/images/{{ disk.name }}.qcow2"
+  when: not additional_diskimage.stat.exists
+
+- name: Attach disk image to host
+  command: >
+    virsh attach-disk {{ item.name }} \
+    --source /var/lib/libvirt/images/{{ disk.name }}.qcow2 \
+    --target {{ disk.target }} \
+    --subdriver qcow2
+    --persistent
+...
