@@ -6,9 +6,9 @@
     - localhost
   vars:
     rhn:
-      org_id: ""
+      org_id: "1"
     lab:
-      ssh_public_key: ""
+      ssh_public_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIYhjnWzsArZVyyTa1E6sDbH06rUGDAhAF3bf3pmeBtm toni@stderr.at"
       name: infra
       network:
         type: nat
@@ -16,7 +16,7 @@
         startip: 192.168.125.1
         netmask: 255.255.255.0
       hosts:
-        - name: main
+        - name: rhel8
           network: rhel8
           macaddr: "52:54:00:08:50:02"
           ipaddr: "192.168.125.2"
@@ -26,7 +26,7 @@
           register: yes
           activationkey: Satellite
           image: rhel-8.2-update-2-x86_64-kvm.qcow2
-        - name: client
+        - name: rhel7
           network: rhel8
           macaddr: "52:54:00:08:50:03"
           ipaddr: "192.168.125.3"
@@ -35,6 +35,6 @@
           cpu: 2
           register: yes
           activationkey: Satellite
-          image: rhel-8.2-update-2-x86_64-kvm.qcow2
+          image: rhel-server-7.8-x86_64-kvm.qcow2
   roles:
     - lab
