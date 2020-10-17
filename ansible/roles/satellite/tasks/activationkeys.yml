@@ -19,4 +19,21 @@
         - label: satellite-tools-6.7-for-rhel-8-x86_64-rpms
           override: enabled
     auto_attach: False
+
+- name: "Create activation key RHEL 7"
+  theforeman.foreman.activation_key:
+    username: "{{ satellite_admin_username }}"
+    password: "{{ satellite_admin_password }}"
+    server_url: "{{ satellite.url}}"
+    validate_certs: false
+    organization: "{{ satellite_organization }}"
+    name: "RHEL 7"
+    lifecycle_environment: "Lab"
+    content_view: "CCV: RHEL 7"
+    subscriptions:
+      - pool_id: "{{ satellite.pool_id }}"
+    content_overrides:
+        - label: rhel-7-server-satellite-tools-6.7-rpms
+          override: enabled
+    auto_attach: False
 ...
