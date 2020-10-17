@@ -141,7 +141,7 @@
       - Library
   when: cv_rhel8_ansible.changed
 
-- name: "Create a composite content view for RHEL 8"
+- name: "Create a composite content view for RHEL 8 RHEV"
   theforeman.foreman.content_view:
     username: "{{ satellite_admin_username }}"
     password: "{{ satellite_admin_password }}"
