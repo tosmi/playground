@@ -1,5 +1,5 @@
 - name: Create inventory file for host {{ item.name }}
-  local_action: template src=templates/inventory-host.j2 dest=../inventory/{{ item.name }}
+  local_action: template src=templates/inventory-host.j2 dest=../../inventory/{{ item.name }}
 
 - name: Add {{ item.name }} to in memory inventory
   add_host:
