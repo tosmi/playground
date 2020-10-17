@@ -43,5 +43,8 @@
 - name: Configure content views
   include_tasks: contentviews.yml
 
+- name: Configure RHEL 7 content views
+  include_tasks: contentviews_rhel7.yml
+
 - name: Configure activation keys
   include_tasks: activationkeys.yml

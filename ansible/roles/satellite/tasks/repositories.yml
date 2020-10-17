@@ -1,3 +1,19 @@
+# used for debugging
+#
+# - name: "Search for possible repository sets of a product"
+#   theforeman.foreman.resource_info:
+#     username: "{{ satellite_admin_username }}"
+#     password: "{{ satellite_admin_password }}"
+#     server_url: "{{ satellite.url}}"
+#     validate_certs: false
+#     organization: "{{ satellite_organization }}"
+#     resource: repository_sets
+#     search: product_name="Red Hat Enterprise Linux Server"
+#   register: data
+# - name: "Output found repository sets, see the contentUrl section for possible repository substitutions"
+#   debug:
+#     var: data
+
 - name: Enable RHEL 8 OS repos
   theforeman.foreman.repository_set:
     username: "{{ satellite_admin_username }}"
@@ -46,7 +62,7 @@
     - satellite-tools-6.7-for-rhel-8-x86_64-rpms
   register: rhel8_additional
 
-- name: "Sync repository RHEL 8 repositories"
+- name: "Sync RHEL 8 repositories"
   theforeman.foreman.repository_sync:
     username: "{{ satellite_admin_username }}"
     password: "{{ satellite_admin_password }}"
@@ -59,3 +75,47 @@
     - "Red Hat Enterprise Linux Fast Datapath"
     - "Red Hat Enterprise Linux for x86_64"
   when: (rhel8_repos.changed or rhel8_kickstart.changed or rhel8_additional.changed)
+
+# must all_repositories to no, and specify exact repo. other we enable all rhel 7 repos (7.0 - 7.n)
+- name: Enable RHEL 7 Server repo
+  theforeman.foreman.repository_set:
+    username: "{{ satellite_admin_username }}"
+    password: "{{ satellite_admin_password }}"
+    server_url: "{{ satellite.url}}"
+    validate_certs: false
+    organization: "{{ satellite_organization }}"
+    label: rhel-7-server-rpms
+    all_repositories: no
+    state: enabled
+    repositories:
+      - releasever: "7Server"
+        basearch: "x86_64"
+  register: rhel7_repos
+
+# only works with all_repositories set to yes (there are just those listed)
+- name: Enable additional RHEL 7 repos
+  theforeman.foreman.repository_set:
+    username: "{{ satellite_admin_username }}"
+    password: "{{ satellite_admin_password }}"
+    server_url: "{{ satellite.url}}"
+    validate_certs: false
+    organization: "{{ satellite_organization }}"
+    label: "{{ item }}"
+    all_repositories: yes
+    state: enabled
+  loop:
+    - rhel-7-server-satellite-tools-6.7-rpms
+    - rhel-7-server-extras-rpms
+  register: rhel7_additional_repos
+
+- name: "Sync RHEL 7 repositories"
+  theforeman.foreman.repository_sync:
+    username: "{{ satellite_admin_username }}"
+    password: "{{ satellite_admin_password }}"
+    server_url: "{{ satellite.url}}"
+    validate_certs: false
+    product: "{{ item }}"
+    organization: "Lab"
+  loop:
+    - "Red Hat Enterprise Linux Server"
+  when: rhel7_repos.changed
