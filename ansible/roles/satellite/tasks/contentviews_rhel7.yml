@@ -1,0 +1,84 @@
+---
+- name: Create content views for RHEL 7
+  theforeman.foreman.content_view:
+    username: "{{ satellite_admin_username }}"
+    password: "{{ satellite_admin_password }}"
+    server_url: "{{ satellite.url}}"
+    validate_certs: false
+    organization: "{{ satellite_organization }}"
+    name: "CV: RHEL 7"
+    repositories:
+      - name: 'Red Hat Enterprise Linux 7 Server - Extras RPMs x86_64'
+        product: 'Red Hat Enterprise Linux Server'
+      - name: 'Red Hat Enterprise Linux 7 Server RPMs x86_64 7Server'
+        product: 'Red Hat Enterprise Linux Server'
+  register: cv_rhel7
+
+- name: "Publish an initial version of the RHEL 7 content view"
+  theforeman.foreman.content_view_version:
+    username: "{{ satellite_admin_username }}"
+    password: "{{ satellite_admin_password }}"
+    server_url: "{{ satellite.url}}"
+    validate_certs: false
+    organization: "{{ satellite_organization }}"
+    content_view: "CV: RHEL 7"
+    lifecycle_environments:
+      - Library
+  when: cv_rhel7.changed
+
+- name: Create content view for RHEL 7 satellite tools
+  theforeman.foreman.content_view:
+    username: "{{ satellite_admin_username }}"
+    password: "{{ satellite_admin_password }}"
+    server_url: "{{ satellite.url}}"
+    validate_certs: false
+    organization: "{{ satellite_organization }}"
+    name: "CV: RHEL 7 Satellite Tools"
+    repositories:
+      - name: 'Red Hat Satellite Tools 6.7 for RHEL 7 Server RPMs x86_64'
+        product: 'Red Hat Enterprise Linux Server'
+  register: cv_rhel7_sattools
+
+- name: "Publish an initial version of the RHEL 7 kickstart content view"
+  theforeman.foreman.content_view_version:
+    username: "{{ satellite_admin_username }}"
+    password: "{{ satellite_admin_password }}"
+    server_url: "{{ satellite.url}}"
+    validate_certs: false
+    organization: "{{ satellite_organization }}"
+    content_view: "CV: RHEL 7 Satellite Tools"
+    lifecycle_environments:
+      - Library
+  when: cv_rhel7_sattools.changed
+
+
+- name: "Create a composite content view for RHEL 7"
+  theforeman.foreman.content_view:
+    username: "{{ satellite_admin_username }}"
+    password: "{{ satellite_admin_password }}"
+    server_url: "{{ satellite.url}}"
+    validate_certs: false
+    organization: "{{ satellite_organization }}"
+    name: "CCV: RHEL 7"
+    composite: true
+    auto_publish: false
+    components:
+      - content_view: "CV: RHEL 7"
+        latest: true
+      - content_view: "CV: RHEL 7 Satellite Tools"
+        latest: true
+  register: ccv_rhel7
+
+- name: "Publish an initial version of the RHEL 7 composite content view"
+  theforeman.foreman.content_view_version:
+    username: "{{ satellite_admin_username }}"
+    password: "{{ satellite_admin_password }}"
+    server_url: "{{ satellite.url}}"
+    validate_certs: false
+    organization: "{{ satellite_organization }}"
+    content_view: "CCV: RHEL 7"
+    lifecycle_environments:
+      - Library
+      - Lab
+  when: ccv_rhel7.changed
+...
