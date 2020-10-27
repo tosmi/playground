@@ -1,5 +1,5 @@
 - name: Destroy a guest vm
-  hosts: localhost
+  hosts: "{{ host | default('localhost')}}"
   gather_facts: no
   become: yes
   tasks:
@@ -35,4 +35,5 @@
       state: absent
 
   - name: Removing {{ guest }} from inventory
+    become: no
     local_action: file path="../inventory/{{ guest }}" state=absent
