@@ -1,6 +1,6 @@
 [{{ lab.name }}]
 {% if lab_ssh_proxy == "" %}
-  {{- item.name }} ansible_host={{ item.ipaddr }}
+  {{- item.name }} ansible_host={{ item.ipaddr }} ansible_user={{ lab_ssh_user | default('root') }}
 {% else %}
-  {{- item.name }} ansible_host={{ item.ipaddr }} ansible_ssh_common_args='-o ProxyCommand="ssh -W %h:%p -q root@playground.stderr.at"'
+  {{- item.name }} ansible_host={{ item.ipaddr }} ansible_user={{ lab_ssh_user | default('root') }} ansible_ssh_common_args='-o ProxyCommand="ssh -W %h:%p -q {{ lab_ssh_proxy }}"'
 {% endif %}
