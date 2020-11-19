@@ -1,10 +1,12 @@
 - name: Create inventory file for host {{ item.name }}
+  become: no
   local_action: template src=templates/inventory-host.j2 dest=../../inventory/{{ item.name }}
 
-- name: Add {{ item.name }} to in memory inventory
+- name: Add {{ item.name }} access via a proxy host to in memory inventory
   add_host:
     hostname: "{{ item.name }}"
     ansible_host: "{{ item.ipaddr }}"
+    ansible_user: "{{ lab_ssh_user | default('root')}}"
     ansible_ssh_common_args: '-o ProxyCommand="ssh -W %h:%p -q {{ lab_ssh_proxy }}"'
   when: lab_ssh_proxy != ""
 
