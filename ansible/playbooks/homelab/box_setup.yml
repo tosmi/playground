@@ -1,0 +1,5 @@
+- name: setup virtualization box
+  hosts:
+    - box01
+  roles:
+    - virthost
