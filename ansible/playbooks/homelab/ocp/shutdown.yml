@@ -1,6 +1,6 @@
 - name: start a cluster
   hosts: localhost
-  become: yes
+  become: no
   gather_facts: no
   tasks:
     - name: stop worker nodes
