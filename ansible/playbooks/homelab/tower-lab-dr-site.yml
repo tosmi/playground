@@ -1,0 +1,51 @@
+---
+- name: create lab network and hosts
+  gather_facts: no
+  become: yes
+  hosts:
+    - box01.lan.stderr.at
+  vars:
+    lab_ssh_proxy: pinhead@box01.lan.stderr.at
+    satellite:
+      host: https://satellite.lan.stderr.at
+    lab:
+      ssh_public_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIYhjnWzsArZVyyTa1E6sDbH06rUGDAhAF3bf3pmeBtm toni@stderr.at"
+      name: towerdrsite
+      network:
+        type: nat
+        name: towerdrsite
+        startip: 192.168.127.1
+        netmask: 255.255.255.0
+      hosts:
+        - name: tower01
+          network: towerdrsite
+          macaddr: "52:54:00:08:51:02"
+          ipaddr: "192.168.127.2"
+          disksize: 20G
+          memory: 4096
+          cpu: 2
+          register: yes
+          activationkey: "RHEL 8"
+          image: rhel-8.2-update-2-x86_64-kvm.qcow2
+        - name: tower02
+          network: towerdrsite
+          macaddr: "52:54:00:08:51:03"
+          ipaddr: "192.168.127.3"
+          disksize: 20G
+          memory: 4096
+          cpu: 2
+          register: yes
+          activationkey: "RHEL 8"
+          image: rhel-8.2-update-2-x86_64-kvm.qcow2
+        - name: tower03
+          network: towerdrsite
+          macaddr: "52:54:00:08:51:04"
+          ipaddr: "192.168.127.4"
+          disksize: 20G
+          memory: 4096
+          cpu: 2
+          register: yes
+          activationkey: "RHEL 8"
+          image: rhel-8.2-update-2-x86_64-kvm.qcow2
+  roles:
+    - lab

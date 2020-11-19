@@ -1,0 +1,42 @@
+- name: create IDM host
+  gather_facts: no
+  become: yes
+  hosts:
+    - localhost
+  vars:
+    satellite:
+      host: https://satellite.lan.stderr.at
+    lab:
+      ssh_public_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIYhjnWzsArZVyyTa1E6sDbH06rUGDAhAF3bf3pmeBtm toni@stderr.at"
+      name: ocp
+      network:
+        type: bridge
+        name: bridge0
+      hosts:
+        - name: idm
+          network: bridge0
+          macaddr: "52:54:00:01:50:79"
+          ipaddr: "10.0.0.179"
+          # disksize: 10G
+          memory: 2048
+          cpu: 1
+          register: yes
+          activationkey: "RHEL 8"
+          image: rhel-8.2-update-2-x86_64-kvm.qcow2
+  roles:
+    - lab
+  post_tasks:
+    - name: install required packages
+      yum:
+        name:
+          - bind-utils
+          - firewalld
+        state: present
+    - name: enable ipa module
+      command: yum module enable idm:DL1
+
+    - name: distro sync
+      command: yum distro-sync
+
+    - name: install ipa
+      command: yum module install idm:DL1/server

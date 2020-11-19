@@ -1,0 +1,80 @@
+---
+- name: create lab network and hosts
+  gather_facts: no
+  become: yes
+  hosts:
+    - localhost
+  vars:
+    satellite:
+      host: https://satellite.lan.stderr.at
+    lab:
+      ssh_public_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIYhjnWzsArZVyyTa1E6sDbH06rUGDAhAF3bf3pmeBtm toni@stderr.at"
+      name: towerha
+      network:
+        type: nat
+        name: towerha
+        startip: 192.168.126.1
+        netmask: 255.255.255.0
+      hosts:
+        - name: tower01
+          network: towerha
+          macaddr: "52:54:00:08:51:02"
+          ipaddr: "192.168.126.2"
+          disksize: 50G
+          memory: 4096
+          cpu: 2
+          register: yes
+          activationkey: "RHEL 8"
+          image: rhel-8.2-update-2-x86_64-kvm.qcow2
+        - name: tower02
+          network: towerha
+          macaddr: "52:54:00:08:51:03"
+          ipaddr: "192.168.126.3"
+          disksize: 20G
+          memory: 4096
+          cpu: 2
+          register: yes
+          activationkey: "RHEL 8"
+          image: rhel-8.2-update-2-x86_64-kvm.qcow2
+        - name: tower03
+          network: towerha
+          macaddr: "52:54:00:08:51:04"
+          ipaddr: "192.168.126.4"
+          disksize: 20G
+          memory: 4096
+          cpu: 2
+          register: yes
+          activationkey: "RHEL 8"
+          image: rhel-8.2-update-2-x86_64-kvm.qcow2
+        - name: rewot01
+          network: towerha
+          macaddr: "52:54:00:08:51:05"
+          ipaddr: "192.168.126.5"
+          disksize: 20G
+          memory: 4096
+          cpu: 2
+          register: yes
+          activationkey: "RHEL 8"
+          image: rhel-8.2-update-2-x86_64-kvm.qcow2
+        - name: rewot02
+          network: towerha
+          macaddr: "52:54:00:08:51:06"
+          ipaddr: "192.168.126.6"
+          disksize: 20G
+          memory: 4096
+          cpu: 2
+          register: yes
+          activationkey: "RHEL 8"
+          image: rhel-8.2-update-2-x86_64-kvm.qcow2
+        - name: rewot03
+          network: towerha
+          macaddr: "52:54:00:08:51:07"
+          ipaddr: "192.168.126.7"
+          disksize: 20G
+          memory: 4096
+          cpu: 2
+          register: yes
+          activationkey: "RHEL 8"
+          image: rhel-8.2-update-2-x86_64-kvm.qcow2
+  roles:
+    - lab
