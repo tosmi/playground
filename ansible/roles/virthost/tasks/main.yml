@@ -2,12 +2,12 @@
 - name: install required packages
   dnf:
     name:
-      - libvirt
-      - podman
-      - virt-install
-      - virt-manager
-      - libguestfs-tools
-      - virt-viewer
+      - "@Virtualization Host"
+      #- podman
+      #- virt-install
+      #- virt-manager
+      #- libguestfs-tools
+      #- virt-viewer
       - xauth
       - python3-lxml
       - tmux
@@ -37,10 +37,11 @@
     owner: root
     group: root
 
-- name: deploy libvirt network hook script
+- name: deploy libvirt network hook script to allow vpn access
   template:
     src: network.j2
     dest: /etc/libvirt/hooks/network
     mode: '0755'
     owner: root
     group: root
+  when: virthost_vpn_ifname is defined

@@ -3,7 +3,7 @@
 set -euf -o pipefail
 
 LOGFILE=/var/log/libvirt_network_hook.log
-VPN_IF={{ playground_vpn_ifname }}
+VPN_IF={{ virthost_vpn_ifname }}
 
 network_name="${1:-}"
 network_task="${2:-}"
