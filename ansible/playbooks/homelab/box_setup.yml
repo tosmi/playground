@@ -1,5 +1,6 @@
 - name: setup virtualization box
+  become: yes
   hosts:
-    - box01
+    - box01.lan.stderr.at
   roles:
-    - virthost
+    - { role: virthost, virthost_configure_bridge: yes }

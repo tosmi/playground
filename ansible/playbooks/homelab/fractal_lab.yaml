@@ -40,7 +40,7 @@
       hostname: satellite
       domain: lan.stderr.at
       fqdn: satellite.lan.stderr.at
-      pool_id: ""
+      pool_id: "8a80804d73f2a17a0173f2a827f9010b"
   roles:
     - role: satellite
       when: lab_destroy is not defined

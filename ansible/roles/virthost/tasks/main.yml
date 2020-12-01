@@ -3,11 +3,11 @@
   dnf:
     name:
       - "@Virtualization Host"
-      #- podman
-      #- virt-install
-      #- virt-manager
-      #- libguestfs-tools
-      #- virt-viewer
+      - podman
+      - virt-install
+      - virt-manager
+      - libguestfs-tools
+      - virt-viewer
       - xauth
       - python3-lxml
       - tmux
@@ -45,3 +45,7 @@
     owner: root
     group: root
   when: virthost_vpn_ifname is defined
+
+# disabled because of a bug
+# - include_tasks: bridge.yml
+#   when: virthost_configure_bridge|bool

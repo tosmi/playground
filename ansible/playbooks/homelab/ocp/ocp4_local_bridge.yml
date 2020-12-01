@@ -1,5 +1,5 @@
 ---
-- name: Create OCP4 bastion host
+- name: Create OCP4 hosts
   gather_facts: no
   become: yes
   hosts:
@@ -95,7 +95,7 @@
   roles:
     - lab
 
-- name:
+- name: Configure the bastion host
   hosts:
     - bastion
   tasks:
