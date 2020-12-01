@@ -1,2 +1,5 @@
 /ansible/inventory/
 /ansible/ansible.log
+/terraform/azure/tower/.terraform/
+/terraform/azure/tower/terraform.tfstate
+/terraform/azure/tower/terraform.tfstate.backup

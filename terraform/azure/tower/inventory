@@ -1,0 +1,19 @@
+[tower]
+localhost ansible_connection=local
+
+[automationhub]
+
+[database]
+# psql "host=towerdb.postgres.database.azure.com port=5432 dbname={your_database} user=tower@towerdb password={your_password} sslmode=require"
+#towerdb.postgres.database.azure.com
+
+[all:vars]
+admin_password='redhat'
+
+pg_host='towerdb.postgres.database.azure.com'
+pg_port='5432'
+
+pg_database='towerdb'
+pg_username='tower'
+pg_password='ta1w4n!start'
+pg_sslmode='prefer'  # set to 'verify-full' for client-side enforced SSL
