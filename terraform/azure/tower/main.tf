@@ -4,6 +4,13 @@ provider "azurerm" {
   features {}
 }
 
+data "azurerm_subscription" "current" {
+}
+
+output "current_subscription_display_name" {
+  value = data.azurerm_subscription.current.display_name
+}
+
 # terraform {
 #   required_providers {
 #     ansible = {
@@ -110,9 +117,9 @@ resource "azurerm_linux_virtual_machine" "tower01" {
   location              = "eastus"
   resource_group_name   = azurerm_resource_group.tower-rg.name
   network_interface_ids = [azurerm_network_interface.tower01-nic.id]
-  size                  = "Standard_B1s"
+  #size                  = "Standard_B1s"
   # for tower
-  # size                  = "Standard_B2s"
+  size                  = "Standard_B2s"
 
   os_disk {
     name              = "tower01-disk"
@@ -142,12 +149,12 @@ resource "azurerm_linux_virtual_machine" "tower01" {
   }
 }
 resource "azurerm_postgresql_server" "tower-db" {
-  name                = "tower-db"
+  name                = "towerdb"
   location            = azurerm_resource_group.tower-rg.location
   resource_group_name = azurerm_resource_group.tower-rg.name
 
   administrator_login          = "awx"
-  administrator_login_password = "redhat"
+  administrator_login_password = "redhat@t3ahder7"
 
   sku_name   = "GP_Gen5_2"
   version    = "10"
@@ -157,15 +164,21 @@ resource "azurerm_postgresql_server" "tower-db" {
   geo_redundant_backup_enabled = false
   auto_grow_enabled            = false
 
-  public_network_access_enabled    = false
+  public_network_access_enabled    = true
   ssl_enforcement_enabled          = true
   ssl_minimal_tls_version_enforced = "TLS1_2"
 }
+
+data "azurerm_public_ip" "tower" {
+  name                = azurerm_public_ip.publicip.name
+  resource_group_name = azurerm_resource_group.tower-rg.name
+}
+
 
 resource "azurerm_postgresql_firewall_rule" "tower-pgrule" {
   name                = "office"
   resource_group_name = azurerm_resource_group.tower-rg.name
   server_name         = azurerm_postgresql_server.tower-db.name
-  start_ip_address    = azurerm_public_ip.publicip.ip_address
-  end_ip_address      = azurerm_public_ip.publicip.ip_address
+  start_ip_address    = data.azurerm_public_ip.tower.ip_address
+  end_ip_address      = data.azurerm_public_ip.tower.ip_address
 }
