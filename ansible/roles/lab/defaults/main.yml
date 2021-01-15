@@ -1,6 +1,6 @@
 ---
 lab_destroy: false
-lab_default_image: rhel-8.2-update-2-x86_64-kvm.qcow2
+lab_default_image: rhel-8.3-x86_64-kvm.qcow2
 
 lab_recreate_network: false
 
