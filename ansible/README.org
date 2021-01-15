@@ -1,0 +1,12 @@
+* Destroying a host
+
+** Destroy a libvirt guest on the local playground
+
+   #+begin_src sh
+ansible-playbook playbooks/destroy_host -e guest=theguest
+   #+end_src
+** Destroy a libvirt guest on a remote playground host
+
+  #+begin_src
+ansible-playbook playbooks/destroy_host -e host=playground.host -e guest=theguest
+  #+end_src
