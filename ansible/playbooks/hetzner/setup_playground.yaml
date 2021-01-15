@@ -1,5 +1,29 @@
 - name: configure host system
   gather_facts: no
   hosts: playground.stderr.at
+
+  pre_tasks:
+    - name: Get active connection name
+      shell: "/usr/bin/nmcli -t c s | awk -F: '/802-3-ethernet/ {print $1}'"
+      register: connection_name
+
+    - name: Configure DNS servers
+      community.general.nmcli:
+        conn_name: "{{ connection_name.stdout }}"
+        type: ethernet
+        dns4:
+          - 213.133.98.98
+          - 213.133.99.99
+        dns4_search:
+          - stderr.at
+        state: present
+      register: dns_config
+
+    - name: Restart NetworkManager if required
+      service:
+        name: NetworkManager
+        state: restarted
+      when: dns_config.changed
+
   roles:
-    - playground
+    - virthost
