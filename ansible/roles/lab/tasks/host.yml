@@ -9,7 +9,7 @@
 - name: Create a host based on on a RHEL image
   include_tasks: rhel_host.yml
   when:
-    - item.image != "blank"
+    - ( item.image is not defined or item.image != "blank" )
     - item.name not in lab_virt_info
 
 - name: Create a blank host
