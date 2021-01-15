@@ -1,5 +1,0 @@
-- name: configure host system
-  gather_facts: no
-  hosts: playground.stderr.at
-  roles:
-    - install_ocp

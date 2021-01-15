@@ -1,0 +1,77 @@
+- name: configure host system
+  gather_facts: no
+  hosts: playground.stderr.at
+  vars:
+    lab:
+      ssh_public_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIYhjnWzsArZVyyTa1E6sDbH06rUGDAhAF3bf3pmeBtm"
+      name: ocpext
+      network:
+        type: nat
+        name: ocpext0
+        startip: 172.16.100.1
+        netmask: 255.255.255.0
+      hosts:
+        - name: bastion
+          network: ocpext0
+          macaddr: "52:54:00:01:50:03"
+          ipaddr: "172.16.100.2"
+          disksize: 50G
+          memory: 4096
+          cpu: 2
+          image: CentOS-Stream-GenericCloud-8-20201217.0.x86_64.qcow2
+          register: yes
+          activationkey: "RHEL 8"
+          additional_disks:
+            - name: bastion-vdb
+              target: vdb
+              size: 200G
+        - name: bootstrap
+          network: ocpext0
+          macaddr: "52:54:00:01:01:81"
+          ipaddr: "172.16.100.10"
+          disksize: 50G
+          memory: 4096
+          cpu: 2
+          image: blank
+        - name: master01
+          network: ocpext0
+          macaddr: "52:54:00:01:01:82"
+          ipaddr: "172.16.100.20"
+          disksize: 120G
+          memory: 12288
+          cpu: 4
+          image: blank
+        - name: master02
+          network: ocpext0
+          macaddr: "52:54:00:01:01:83"
+          ipaddr: "172.16.100.21"
+          disksize: 120G
+          memory: 12288
+          cpu: 4
+          image: blank
+        - name: master03
+          network: ocpext0
+          macaddr: "52:54:00:01:01:84"
+          ipaddr: "172.16.100.22"
+          disksize: 120G
+          memory: 12288
+          cpu: 4
+          image: blank
+        - name: worker01
+          network: ocpext0
+          macaddr: "52:54:00:01:01:88"
+          ipaddr: "172.16.100.40"
+          disksize: 120G
+          memory: 8192
+          cpu: 2
+          image: blank
+        - name: worker02
+          network: ocpext0
+          macaddr: "52:54:00:01:01:89"
+          ipaddr: "172.16.100.41"
+          disksize: 120G
+          memory: 8192
+          cpu: 2
+          image: blank
+  roles:
+    - lab
