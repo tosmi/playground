@@ -35,6 +35,7 @@
     --vcpus {{ item.cpu }}
     --os-type=linux
     --os-variant rhel7.0
+    --noautoconsole
     --network "network={{ lab.network.name }},mac={{ item.macaddr }}"
     --pxe
   when:
