@@ -1,5 +1,7 @@
 * Renaming a master node
 
+  Let's say you've installed a new cluster and did a stupid mistake. One of your master nodes has to wrong name!
+
   #+begin_src
 $ oc nodes
 NAME       STATUS   ROLES    AGE   VERSION
@@ -10,13 +12,15 @@ worker-0   Ready    worker   10h   v1.19.0+7070803
 worker-1   Ready    worker   10h   v1.19.0+7070803
   #+end_src
 
-  We have a master master-3 that we would like to rename to master-2
-
-  #+begin_src
-oc project openshift-etcd
-  #+end_src
+  We have a master node _master-3_ that we would like to rename to master-2.
 
 ** Verify ETCD status
+
+   First change into the openshift-etcd project:
+
+     #+begin_src
+oc project openshift-etcd
+  #+end_src
 
    #+begin_src sh
 oc get etcd -o=jsonpath='{range .items[0].status.conditions[?(@.type=="EtcdMembersAvailable")]}{.message}{"\n"}'
@@ -27,6 +31,8 @@ oc get etcd -o=jsonpath='{range .items[0].status.conditions[?(@.type=="EtcdMembe
    #+begin_src sh
 3 members are available
    #+end_src
+
+   List all pods running ETCD:
 
    #+begin_src sh
 oc get -l app=etcd pods -o wide
@@ -118,7 +124,7 @@ Failed to get the status of endpoint https://172.16.100.22:2379 (context deadlin
 +----------------------------+------------------+---------+---------+-----------+------------+-----------+------------+--------------------+--------+
    #+end_src
 
-   So the member with IP 172.16.100.20 is the current leader, on master-3 (172.16.100.22) is not reachable.
+   So the member with IP 172.16.100.20 is the current leader, master-3 (172.16.100.22) is not reachable.
 
    List the members of the cluster again
 
@@ -135,7 +141,7 @@ sh-4.4# etcdctl member list -w table
 
    Now we are going to remove master-3 from the ETCD cluster.
 
-   WARNING: be extra careful to remove the right cluster member (master-3 in our case) in this step!
+   *WARNING*: be extra careful to remove the right cluster member (master-3 in our case) in this step!
 
    #+begin_src sh
 etcdctl member remove 385e47a681af114a
@@ -160,8 +166,7 @@ sh-4.4# etcdctl member list -w table
 oc delete node master-3
    #+end_src
 
-   WARNING: As the cluster will reconfigure itself after this step it is possible that API request fail
-   for example
+   *WARNING*: As the cluster will reconfigure itself after this step it is possible that API request fail for example
    #+begin_src sh
    oc get co
 Error from server (InternalError): an error on the server ("") has prevented the request from succeeding (get clusteroperators.config.openshift.io)
@@ -316,5 +321,46 @@ sh-4.4# etcdctl endpoint health -w table
    Verify all cluster operators are ok. WAIT if there are cluster operators progressing!
 
    #+begin_src sh
-
+# oc get co
+NAME                                       VERSION   AVAILABLE   PROGRESSING   DEGRADED   SINCE
+authentication                             4.6.8     True        False         False      23m
+cloud-credential                           4.6.8     True        False         False      11h
+cluster-autoscaler                         4.6.8     True        False         False      11h
+config-operator                            4.6.8     True        False         False      11h
+console                                    4.6.8     True        False         False      10h
+csi-snapshot-controller                    4.6.8     True        False         False      10h
+dns                                        4.6.8     True        False         False      11h
+etcd                                       4.6.8     True        False         False      11h
+image-registry                             4.6.8     True        False         False      11h
+ingress                                    4.6.8     True        False         False      11h
+insights                                   4.6.8     True        False         False      11h
+kube-apiserver                             4.6.8     True        False         False      11h
+kube-controller-manager                    4.6.8     True        False         False      11h
+kube-scheduler                             4.6.8     True        False         False      11h
+kube-storage-version-migrator              4.6.8     True        False         False      10h
+machine-api                                4.6.8     True        False         False      11h
+machine-approver                           4.6.8     True        False         False      11h
+machine-config                             4.6.8     True        False         False      26m
+marketplace                                4.6.8     True        False         False      10h
+monitoring                                 4.6.8     True        False         False      20m
+network                                    4.6.8     True        False         False      11h
+node-tuning                                4.6.8     True        False         False      10h
+openshift-apiserver                        4.6.8     True        False         False      38m
+openshift-controller-manager               4.6.8     True        False         False      10h
+openshift-samples                          4.6.8     True        False         False      10h
+operator-lifecycle-manager                 4.6.8     True        False         False      11h
+operator-lifecycle-manager-catalog         4.6.8     True        False         False      11h
+operator-lifecycle-manager-packageserver   4.6.8     True        False         False      18m
+service-ca                                 4.6.8     True        False         False      11h
+storage                                    4.6.8     True        False         False      11h
    #+end_src
+
+   Just to be sure verify the clusterversion
+
+   #+begin_src sh
+# oc get clusterversions.config.openshift.io
+NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
+version   4.6.8     True        False         10h     Cluster version is 4.6.8
+   #+end_src
+
+   *FINE*
