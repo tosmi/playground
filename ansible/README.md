@@ -1,24 +1,24 @@
 
 # Table of Contents
 
-1.  [Destroying a host](#orgc45c58a)
-    1.  [Destroy a libvirt guest on the local playground](#org2ba0cf0)
-    2.  [Destroy a libvirt guest on a remote playground host](#orgf17dd6f)
+1.  [Destroying a host](#org1000e40)
+    1.  [Destroy a libvirt guest on the local playground](#org144d814)
+    2.  [Destroy a libvirt guest on a remote playground host](#orgb329382)
 
 
-<a id="orgc45c58a"></a>
+<a id="org1000e40"></a>
 
 # Destroying a host
 
 
-<a id="org2ba0cf0"></a>
+<a id="org144d814"></a>
 
 ## Destroy a libvirt guest on the local playground
 
     ansible-playbook playbooks/destroy_host -e guest=theguest
 
 
-<a id="orgf17dd6f"></a>
+<a id="orgb329382"></a>
 
 ## Destroy a libvirt guest on a remote playground host
 
