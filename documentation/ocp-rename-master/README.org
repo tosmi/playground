@@ -1,6 +1,8 @@
 * Renaming a master node
 
-  Let's say you've installed a new cluster and did a stupid mistake. One of your master nodes has to wrong name!
+  Let's say you've installed a new cluster and did a stupid mistake: one of your master nodes has to wrong name!
+
+  We used the great[[https://github.com/RedHatOfficial/ocp4-helpernode.git][ OCP4 helpernode]] ansible playbook to prepare the cluster setup and had a typo in _vars.yaml_...
 
   #+begin_src
 $ oc nodes
@@ -12,7 +14,7 @@ worker-0   Ready    worker   10h   v1.19.0+7070803
 worker-1   Ready    worker   10h   v1.19.0+7070803
   #+end_src
 
-  We have a master node _master-3_ that we would like to rename to master-2.
+  We have a master node _master-3_ we would like to rename to _master-2_.
 
 ** Verify ETCD status
 
@@ -21,6 +23,8 @@ worker-1   Ready    worker   10h   v1.19.0+7070803
      #+begin_src
 oc project openshift-etcd
   #+end_src
+
+  Get the status of ETCD:
 
    #+begin_src sh
 oc get etcd -o=jsonpath='{range .items[0].status.conditions[?(@.type=="EtcdMembersAvailable")]}{.message}{"\n"}'
@@ -59,7 +63,7 @@ sh-4.4# etcdctl member list -w table
 
    If all members are OK, especially the members that will stay in the
    cluster (master-0 and master-1 in our case) continue with shutting
-   down the node to be replaced
+   down the node we would like to replace (*master-3* in our case).
 
 ** Removing the master with the wrong name from the cluster
 
@@ -70,8 +74,8 @@ $ ssh core@master-3
 $ sudo systemctl poweroff
    #+end_src
 
-   Verify that the API is still OK, this could take a while if master-3 was the main API server. The loadbalancer has to stop sending
-   traffic to the shut down master-3 node.
+   Verify that the K8s API is still OK, this could take a while if master-3 was the main API server. Also the loadbalancer has to stop sending
+   traffic to master node we turned off:
 
    #+begin_src sh
 oc get nodes
@@ -93,7 +97,7 @@ worker-1   Ready      worker   10h   v1.19.0+7070803
 oc rsh etcd-master-0
    #+end_src
 
-   Check the health of ETCD endpoints
+   Check the health of ETCD endpoints:
 
    #+begin_src
 sh-4.4# etcdctl endpoint health -w table
@@ -108,9 +112,9 @@ sh-4.4# etcdctl endpoint health -w table
 Error: unhealthy cluster
    #+end_src
 
-   The member with ip 172.16.100.22 is unhealth, this is the master-3 node.
+   The member with IP 172.16.100.22 is unhealthy, this is our master-3 node.
 
-   Check the endpoint status of ETCD cluster members
+   Check the endpoint status of ETCD cluster members:
 
    #+begin_src sh
 sh-4.4# etcdctl endpoint status -w table
@@ -126,7 +130,7 @@ Failed to get the status of endpoint https://172.16.100.22:2379 (context deadlin
 
    So the member with IP 172.16.100.20 is the current leader, master-3 (172.16.100.22) is not reachable.
 
-   List the members of the cluster again
+   List the members of the cluster again:
 
       #+begin_src
 sh-4.4# etcdctl member list -w table
@@ -160,7 +164,7 @@ sh-4.4# etcdctl member list -w table
 +------------------+---------+----------+----------------------------+----------------------------+------------+
    #+end_src
 
-   Remove the master node from Openshift
+   Remove the master node from OpenShift:
 
    #+begin_src
 oc delete node master-3
@@ -174,7 +178,7 @@ Error from server (InternalError): an error on the server ("") has prevented the
 
    You have to be patient, everything should work again after a few minutes
 
-   Check the state of clusteroperators:
+   Check the state of cluster operators:
 
 #+begin_src sh
 oc get co
@@ -234,7 +238,7 @@ oc delete secret -n openshift-etcd etcd-serving-metrics-master-3
 
 ** Adding the third ETCD member and OpenShift cluster member back to the cluster
 
-   Reinstall the third master with the corret name. If you are using ocp4-helpernode, fix the name of the master in vars.yaml and apply the playbook gain
+   Reinstall the third master with the correct name. If you are using [[https://github.com/RedHatOfficial/ocp4-helpernode.git][OCP4 helpernode]], fix the name of the master in vars.yaml and apply the playbook gain
 
    #+begin_src sh
 ansible-playbook tasks/main.yml -e @vars.yaml
@@ -248,14 +252,14 @@ NAME        AGE   SIGNERNAME                                    REQUESTOR       
 csr-k54wk   94s   kubernetes.io/kube-apiserver-client-kubelet   system:serviceaccount:openshift-machine-config-operator:node-bootstrapper   Pending
    #+end_src
 
-   Sign the CSR
+   Sign the CSR:
 
    #+begin_src sh
 oc adm certificate approve csr-k54wk
 certificatesigningrequest.certificates.k8s.io/csr-k54wk approved
    #+end_src
 
-   Wait for the second CSR and sign it
+   Wait for the second CSR and sign it:
 
    #+begin_src sh
 # oc get csr |grep Pending
@@ -276,7 +280,9 @@ worker-0   Ready    worker   10h   v1.19.0+7070803
 worker-1   Ready    worker   10h   v1.19.0+7070803
    #+end_src
 
-   Verify the number of ETCD members
+   *master-2* successfully joined the cluster!
+
+   Verify the number of ETCD members:
 
    #+begin_src sh
 # oc get etcd -o=jsonpath='{range .items[0].status.conditions[?(@.type=="EtcdMembersAvailable")]}{.message}{"\n"}'
@@ -318,7 +324,7 @@ sh-4.4# etcdctl endpoint health -w table
 +----------------------------+--------+-------------+-------+
 #+end_src
 
-   Verify all cluster operators are ok. WAIT if there are cluster operators progressing!
+   Verify all cluster operators are ok. WAIT and be PATIENT if there are cluster operators progressing!
 
    #+begin_src sh
 # oc get co
@@ -355,7 +361,7 @@ service-ca                                 4.6.8     True        False         F
 storage                                    4.6.8     True        False         False      11h
    #+end_src
 
-   Just to be sure verify the clusterversion
+   Just to be sure verify the cluster version:
 
    #+begin_src sh
 # oc get clusterversions.config.openshift.io
