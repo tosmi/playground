@@ -15,7 +15,7 @@ Let's say you've installed a new cluster and did a stupid mistake: one of your m
 
 We used the great[ OCP4 helpernode](https://github.com/RedHatOfficial/ocp4-helpernode.git) ansible playbook to prepare the cluster setup and had a typo in <span class="underline">vars.yaml</span>&#x2026;
 
-    $ oc nodes
+    $ oc get nodes
     NAME       STATUS   ROLES    AGE   VERSION
     master-0   Ready    master   10h   v1.19.0+7070803
     master-1   Ready    master   10h   v1.19.0+7070803
