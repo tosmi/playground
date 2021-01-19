@@ -5,7 +5,7 @@
   We used the great[[https://github.com/RedHatOfficial/ocp4-helpernode.git][ OCP4 helpernode]] ansible playbook to prepare the cluster setup and had a typo in _vars.yaml_...
 
   #+begin_src
-$ oc nodes
+$ oc get nodes
 NAME       STATUS   ROLES    AGE   VERSION
 master-0   Ready    master   10h   v1.19.0+7070803
 master-1   Ready    master   10h   v1.19.0+7070803
