@@ -1,0 +1,20 @@
+- name: Deploy RPZ (Response Policy Zone) file to bastion
+  template:
+    src: rpz.db.j2
+    dest: /var/named/rpz.db
+
+- name: Deploy RPZ configuration file
+  copy:
+    src: rpz.conf
+    dest: /etc/named/rpz.conf
+
+- name: Include RPZ option in config
+  lineinfile:
+    path: /etc/named.conf
+    insertafter: '^options {'
+    line: '	response-policy { zone "rpz"; };'
+
+- name: Include RPZ db in named config
+  lineinfile:
+    path: /etc/named.conf
+    line: 'include "/etc/named/rpz.conf";'
