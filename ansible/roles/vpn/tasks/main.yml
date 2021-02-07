@@ -1,0 +1,11 @@
+---
+- name: Install openvpn package
+  dnf:
+    name: openvpn
+    state: present
+
+- include_tasks: server.yml
+  when: not vpn_configure_client
+
+- include_tasks: client.yml
+  when: vpn_configure_client

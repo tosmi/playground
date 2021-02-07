@@ -1,0 +1,26 @@
+- name: Deploy VPN client configuration
+  copy:
+    src: openvpn_client.conf
+    dest: /etc/openvpn/client/client.conf
+
+
+- name: Check if VPN key already exists
+  stat:
+    path: /etc/openvpn/client/client.key
+  register: vpn_client_key
+
+- name: Print warning if VPN client key is missing
+  block:
+    - debug:
+        msg: Please copy the VPN secret key to /etc/openvpn/client/client.key and run the playbook again
+
+    - pause:
+
+  when: not vpn_client_key.stat.exists
+
+- name: Enable VPN client service
+  service:
+    name: openvpn-client@client
+    state: started
+    enabled: yes
+  when: vpn_client_key.stat.exists

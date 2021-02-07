@@ -1,0 +1,3 @@
+---
+vpn_key_file: /etc/openvpn/server/vpn.key
+vpn_configure_client: false

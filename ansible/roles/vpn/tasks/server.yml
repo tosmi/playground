@@ -1,0 +1,29 @@
+- name: Check if key file exists
+  stat:
+    path: "{{ vpn_key_file }}"
+  register: vpn_key
+
+- name: Create VPN shared secret key
+  command: /usr/sbin/openvpn --genkey --secret "{{ vpn_key_file }}"
+  when: not vpn_key.stat.exists
+
+- name: Copy VPN server config to remote
+  copy:
+    src: openvpn_server.conf
+    dest: /etc/openvpn/server/server.conf
+
+- name: Copy VPN systemctl startup file to remote
+  template:
+    src: vpn.service.j2
+    dest: /etc/systemd/system/"{{ vpn_server }}-vpn.service"
+  register: vpn_service
+
+- name: Reload systemd if required
+  command: /bin/systemctl daemon-reload
+  when: vpn_service.changed
+
+- name: Ensure VPN service is running
+  service:
+    name: "{{ vpn_server }}-vpn"
+    state: started
+    enabled: yes
