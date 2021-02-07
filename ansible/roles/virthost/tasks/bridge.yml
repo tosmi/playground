@@ -7,9 +7,21 @@
       - python3-policycoreutils
     state: present
 
-- name: configure bridge
+- name: Configure bridge interface
   nmcli:
     type: bridge
     state: present
     ifname: bridge0
     conn_name: bridge0
+    ip4: "{{ virthost_ip4 }}"
+    gw4: "{{ virthost_gw4 }}"
+    dns4: "{{ virthost_dns4 }}"
+    dns4_search: "{{ virthost_dns4_search }}"
+
+- name: Configure physcal interface as a bridge member
+  nmcli:
+    type: ethernet
+    conn_name: "{{ virthost_interface }}-bridge0"
+    ifname: "{{ virthost_interface }}"
+    master: bridge0
+    state: present

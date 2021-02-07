@@ -46,6 +46,8 @@
     group: root
   when: virthost_vpn_ifname is defined
 
-# disabled because of a bug
-# - include_tasks: bridge.yml
-#   when: virthost_configure_bridge|bool
+- include_tasks: bridge.yml
+  when: virthost_configure_bridge|bool
+
+- name: Configure filesystems
+  include_tasks: filesystems.yml

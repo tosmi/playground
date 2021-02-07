@@ -1,0 +1,17 @@
+- name: Create a logical volume for virt images
+  community.general.lvol:
+    vg: rootvg
+    lv: imagelv
+    size: 200G
+
+- name: Create filesystem for virt images
+  filesystem:
+    fstype: xfs
+    dev: /dev/rootvg/imagelv
+
+- name: Mount virt image filesystem
+  mount:
+    path: /var/lib/libvirt/images
+    src: /dev/rootvg/imagelv
+    fstype: xfs
+    state: mounted
