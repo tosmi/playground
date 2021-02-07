@@ -1,4 +1,4 @@
-- name: configure host system
+- name: Configure host system
   gather_facts: no
   hosts: playground.stderr.at
   vars:
@@ -74,4 +74,13 @@
           cpu: 2
           image: blank
   roles:
-    - lab
+    - role: lab
+      vars:
+        lab_ssh_proxy: playground.stderr.at
+
+- name: Configure bastion host
+  hosts: bastion
+  roles:
+    - role: bastion
+      vars:
+        bastion_rpz_required: true
