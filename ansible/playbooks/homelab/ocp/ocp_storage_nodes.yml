@@ -38,17 +38,5 @@
             - name: stor02-vdb
               target: vdb
               size: 200G
-        - name: stor03
-          network: bridge0
-          macaddr: "52:54:00:01:01:92"
-          ipaddr: "10.0.0.192"
-          disksize: 120G
-          memory: 20480
-          cpu: 4
-          image: blank
-          additional_disks:
-            - name: stor03-vdb
-              target: vdb
-              size: 200G
   roles:
     - lab

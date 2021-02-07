@@ -68,14 +68,6 @@
           memory: 8192
           cpu: 2
           image: blank
-        - name: infra02
-          network: bridge0
-          macaddr: "52:54:00:01:01:86"
-          ipaddr: "10.0.0.186"
-          disksize: 120G
-          memory: 8192
-          cpu: 2
-          image: blank
         - name: worker01
           network: bridge0
           macaddr: "52:54:00:01:01:88"
@@ -84,21 +76,19 @@
           memory: 8192
           cpu: 2
           image: blank
-        - name: worker02
-          network: bridge0
-          macaddr: "52:54:00:01:01:89"
-          ipaddr: "10.0.0.189"
-          disksize: 120G
-          memory: 8192
-          cpu: 2
-          image: blank
+
   roles:
     - lab
 
 - name: Configure the bastion host
   hosts:
     - bastion
-  tasks:
+  roles:
+    - role: vpn
+      vars:
+        vpn_configure_client: true
+        vpn_server: playground
+  post_tasks:
     - name: install required packages
       package:
         name:
