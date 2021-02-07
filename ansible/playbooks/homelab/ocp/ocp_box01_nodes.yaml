@@ -1,0 +1,50 @@
+---
+- name: Create OCP4 storage nodes
+  gather_facts: no
+  become: yes
+  hosts:
+    - box01.lan.stderr.at
+  vars:
+    satellite:
+      host: https://satellite.lan.stderr.at
+    lab:
+      ssh_public_key: ""
+      name: ocp
+      network:
+        type: bridge
+        name: bridge0
+      hosts:
+        - name: stor01
+          network: bridge0
+          macaddr: "52:54:00:01:01:90"
+          ipaddr: "10.0.0.190"
+          disksize: 120G
+          memory: 20480
+          cpu: 4
+          image: blank
+          additional_disks:
+            - name: stor01-vdb
+              target: vdb
+              size: 200G
+        - name: stor02
+          network: bridge0
+          macaddr: "52:54:00:01:01:91"
+          ipaddr: "10.0.0.191"
+          disksize: 120G
+          memory: 20480
+          cpu: 4
+          image: blank
+          additional_disks:
+            - name: stor02-vdb
+              target: vdb
+              size: 200G
+        - name: worker02
+          network: bridge0
+          macaddr: "52:54:00:01:01:89"
+          ipaddr: "10.0.0.189"
+          disksize: 120G
+          memory: 16384
+          cpu: 2
+          image: blank
+  roles:
+    - lab
