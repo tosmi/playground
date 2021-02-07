@@ -5,6 +5,7 @@
   pre_tasks:
     - name: Get active connection name
       shell: "/usr/bin/nmcli -t c s | awk -F: '/802-3-ethernet/ {print $1}'"
+      changed_when: no
       register: connection_name
 
     - name: Configure DNS servers
@@ -27,3 +28,6 @@
 
   roles:
     - virthost
+    - role: vpn
+      vars:
+        vpn_server: playground
