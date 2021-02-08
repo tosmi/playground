@@ -27,7 +27,9 @@
       when: dns_config.changed
 
   roles:
-    - virthost
+    - role: virthost
+      vars:
+        virthost_vpn_ifname: tun1
     - role: vpn
       vars:
         vpn_server: playground
