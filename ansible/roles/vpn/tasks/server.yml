@@ -27,3 +27,65 @@
     name: "{{ vpn_server }}-vpn"
     state: started
     enabled: yes
+
+- name: Deploy configuration for gateway vpn
+  copy:
+    src: gateway.conf
+    dest: /etc/openvpn/server/gateway.conf
+    owner: root
+    group: root
+    mode: 0600
+
+- name: Deploy VPN gateway CA certificate
+  copy:
+    src: stderr-ca.crt
+    dest: /etc/pki/ca-trust/source/anchors/stderr-ca.crt
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Deploy VPN gateway certificate
+  copy:
+    src: gateway.crt
+    dest: /etc/openvpn/server/gateway.crt
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Check if DH parameters file exists
+  stat:
+    path: /etc/openvpn/server/dh2048.pem
+  register: vpn_dh_param_file
+
+- name: Create DH parameters file if required
+  command: /usr/bin/openssl dhparam -out /etc/openvpn/server/dh2048.pem 2048
+  when: not vpn_dh_param_file.stat.exists
+
+- name: Check if TLS auth key exists
+  stat:
+    path: /etc/openvpn/server/ta.key
+  register: vpn_tls_auth_file
+
+- name: Create TLS auth file if required
+  command: openvpn --genkey --secret /etc/openvpn/server/ta.key
+  when: not vpn_tls_auth_file.stat.exists
+
+- name: Check if gateway private key already exists
+  stat:
+    path: /etc/openvpn/server/gateway.key
+  register: vpn_gateway_key
+
+- name: Print warning if VPN client key is missing
+  block:
+    - debug:
+        msg: Please copy the gateway VPN secret key to /etc/openvpn/server/gateway.key and run the playbook again
+
+    - pause:
+  when: not vpn_gateway_key.stat.exists
+
+- name: Enable and start the gateway VPN service
+  service:
+    name: openvpn-server@gateway
+    state: started
+    enabled: yes
+  when: vpn_gateway_key.stat.exists
