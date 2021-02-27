@@ -1,0 +1,19 @@
+# - name: Download katello rpm
+#   get_url:
+#     url:
+#     dest: /tmp/katello.rpm
+
+- name: Install katello rpm
+  dnf:
+    name: "https://{{ virthost_satellite_host }}/pub/katello-ca-consumer-latest.noarch.rpm"
+    validate_certs: no
+    disable_gpg_check: yes
+    state: present
+
+- name: Register to a satellite with a activation key
+  redhat_subscription:
+    state: present
+    activationkey: "RHEL 8"
+    server_hostname: "{{ virthost_satellite_host }}"
+    server_insecure: yes
+    org_id: "Lab"
