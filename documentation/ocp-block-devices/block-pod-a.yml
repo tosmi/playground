@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: block-pod-a
+  name: block-pod-a
+spec:
+  containers:
+  - image: registry.redhat.io/ubi8/ubi:8.3
+    name: block-pod-a
+    command:
+      - sh
+      - -c
+      - 'df -h /block && findmnt /block && sleep infinity'
+    volumeMounts:
+    - name: blockdevice
+      mountPath: /block
+  volumes:
+  - name: blockdevice
+    persistentVolumeClaim:
+      claimName: block-claim
