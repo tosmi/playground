@@ -4,7 +4,7 @@
     path: "/var/lib/libvirt/images/{{ disk.name }}.qcow2"
   register: additional_diskimage
 
-- name: Create and format blank disk image
+- name: Create and format blank disk image {{ disk.name }} with {{ disk.size }}
   block:
     - name: Create disk images for {{ disk.name}}
       command: /usr/bin/qemu-img create -f qcow2 "/var/lib/libvirt/images/{{ disk.name }}.qcow2" "{{ disk.size }}"
