@@ -1,4 +1,7 @@
 ---
+- include_tasks: satellite_register.yml
+  when: virthost_satellite_register|bool
+
 - name: install required packages
   dnf:
     name:

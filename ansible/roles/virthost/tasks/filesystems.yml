@@ -12,12 +12,13 @@
     community.general.lvol:
       vg: rootvg
       lv: imagelv
-      size: 200G
+      size: "{{ virthost_imagelv_size }}"
 
   - name: Create filesystem for virt images
     filesystem:
       fstype: xfs
       dev: /dev/rootvg/imagelv
+      resizefs: yes
 
   - name: Mount virt image filesystem
     mount:

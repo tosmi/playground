@@ -13,10 +13,10 @@
     state: present
     ifname: bridge0
     conn_name: bridge0
-    ip4: "{{ virthost_ip4 }}"
-    gw4: "{{ virthost_gw4 }}"
-    dns4: "{{ virthost_dns4 }}"
-    dns4_search: "{{ virthost_dns4_search }}"
+    ip4: "{{ ansible_default_ipv4.address }}/24"
+    gw4: "{{ ansible_default_ipv4.gateway }}"
+    dns4: "{{ ansible_dns.nameservers }}"
+    dns4_search: "{{ ansible_dns.search }}"
 
 - name: Configure physcal interface as a bridge member
   nmcli:

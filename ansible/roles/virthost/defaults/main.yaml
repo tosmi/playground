@@ -1,2 +1,4 @@
 playground_vpn_ifname: wg0
 virthost_configure_bridge: false
+virthost_satellite_register: false
+virthost_imagelv_size: 200G
