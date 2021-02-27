@@ -1,8 +1,3 @@
-# - name: Download katello rpm
-#   get_url:
-#     url:
-#     dest: /tmp/katello.rpm
-
 - name: Install katello rpm
   dnf:
     name: "https://{{ virthost_satellite_host }}/pub/katello-ca-consumer-latest.noarch.rpm"
