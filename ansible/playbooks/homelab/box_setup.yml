@@ -1,6 +1,10 @@
 - name: setup virtualization box
   become: yes
   hosts:
-    - box01.lan.stderr.at
+    - boxes
   roles:
-    - { role: virthost, virthost_configure_bridge: yes }
+    - role: virthost
+      vars:
+        virthost_configure_bridge: yes
+        virthost_satellite_register: yes
+        virthost_imagelv_size: 500G
