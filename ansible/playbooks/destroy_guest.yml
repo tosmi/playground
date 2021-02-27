@@ -29,6 +29,11 @@
       path: /var/lib/libvirt/images/{{ guest }}-vda.qcow2
       state: absent
 
+  - name: Remove {{ guest }} secondary disk image
+    file:
+      path: /var/lib/libvirt/images/{{ guest }}-vdb.qcow2
+      state: absent
+
   - name: Remove {{ guest }} temporary disk image
     file:
       path: /var/lib/libvirt/images/{{ guest }}-vda.qcow2.temp
