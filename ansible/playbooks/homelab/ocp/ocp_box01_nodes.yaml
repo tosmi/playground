@@ -1,3 +1,4 @@
+
 ---
 - name: Create OCP4 storage nodes
   gather_facts: no
@@ -25,25 +26,21 @@
           additional_disks:
             - name: stor01-vdb
               target: vdb
-              size: 200G
-        - name: stor02
-          network: bridge0
-          macaddr: "52:54:00:01:01:91"
-          ipaddr: "10.0.0.191"
-          disksize: 120G
-          memory: 20480
-          cpu: 4
-          image: blank
-          additional_disks:
-            - name: stor02-vdb
-              target: vdb
-              size: 200G
+              size: 300G
         - name: worker02
           network: bridge0
           macaddr: "52:54:00:01:01:89"
           ipaddr: "10.0.0.189"
           disksize: 120G
           memory: 16384
+          cpu: 2
+          image: blank
+        - name: infra02
+          network: bridge0
+          macaddr: "52:54:00:01:01:86"
+          ipaddr: "10.0.0.186"
+          disksize: 120G
+          memory: 8192
           cpu: 2
           image: blank
   roles:
