@@ -8,3 +8,7 @@
         virthost_configure_bridge: yes
         virthost_satellite_register: yes
         virthost_imagelv_size: 500G
+
+  post_tasks:
+    - name: Disable tx and rx checksum offloading
+      command: /usr/bin/nmcli connection modify eno1-bridge0 ethtool.feature-rx off ethtool.feature-tx off
