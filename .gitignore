@@ -1,4 +1,3 @@
-/ansible/inventory/
 /ansible/ansible.log
 /terraform/azure/tower/.terraform/
 /terraform/azure/tower/terraform.tfstate
