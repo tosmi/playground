@@ -1,0 +1,23 @@
+- name: create fedora host
+  gather_facts: no
+  become: yes
+  hosts:
+    - box03.lan.stderr.at
+  vars:
+    lab:
+      ssh_public_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIYhjnWzsArZVyyTa1E6sDbH06rUGDAhAF3bf3pmeBtm toni@stderr.at"
+      name: linux
+      network:
+        type: bridge
+        name: bridge0
+      hosts:
+        - name: fedora
+          network: bridge0
+          macaddr: "52:54:00:01:50:78"
+          ipaddr: "10.0.0.178"
+          disksize: 30G
+          memory: 8192
+          cpu: 2
+          image: blank
+  roles:
+    - lab
