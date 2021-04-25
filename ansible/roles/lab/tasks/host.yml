@@ -1,7 +1,8 @@
-- debug:
+- name: Print information about host
+  debug:
     msg: "Going to create host {{ item.name }} with a {{ item.disksize | default('10') }} disk image, {{ item.cpu | default('1') }} cpu(s) and {{ item.memory | default('2048') }} memory"
 
-- name: check if {{ item.name }} is already defined
+- name: Check if {{ item.name }} is already defined
   virt:
     command: info
   register: lab_virt_info
@@ -18,18 +19,23 @@
     - item.image == "blank"
     - item.name not in lab_virt_info
 
-- name: restart host if required
+- name: Enable autostart for host {{ item.name }}
+  virt:
+    autostart: yes
+    name: "{{ item.name }}"
+
+- name: Restart host if required
   block:
     - name: shutdown host {{ item.name }}
       virt:
         state: shutdown
         name: "{{ item.name }}"
 
-    - name: give host time to shut down
+    - name: Give host time to shut down
       pause:
         seconds: 10
 
-    - name: start host {{ item.name }}
+    - name: Start host {{ item.name }}
       virt:
         state: running
         name: "{{ item.name }}"
@@ -37,7 +43,7 @@
     - item.name in lab_virt_info
     - lab_recreate_network|bool
 
-- name: add additional disks to guest
+- name: Add additional disks to guest
   include_tasks: add_disk.yml
   loop: "{{ item.additional_disks }}"
   loop_control:
