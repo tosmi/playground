@@ -4,15 +4,16 @@
     state: present
     org_id: "{{ rhn.org_id }}"
     activationkey: "{{ item.activationkey }}"
-  when: rhn.org_id is defined
-
+  when:
+    - rhn.host is not defined
+    - rhn.org_id is defined
 
 - name: configure and register to local satellite
   block:
     - name: download katello rpm
       delegate_to: "{{ item.name }}"
       get_url:
-        url: "{{ satellite.host }}/pub/katello-ca-consumer-latest.noarch.rpm"
+        url: "{{ rhn.host }}/pub/katello-ca-consumer-latest.noarch.rpm"
         validate_certs: no
         dest: /tmp/katello-ca-consumer-latest.noarch.rpm
 
@@ -28,7 +29,9 @@
       redhat_subscription:
         state: present
         activationkey: "{{ item.activationkey }}"
-        server_hostname: "{{ satellite.host }}/rhsm"
+        server_hostname: "{{ rhn.host }}/rhsm"
         server_insecure: yes
         org_id: "Lab"
-  when: satellite.host is defined
+  when:
+    - rhn.host is defined
+    - rhn.org_id is defined
