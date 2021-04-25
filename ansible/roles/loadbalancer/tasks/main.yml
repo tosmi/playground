@@ -1,0 +1,9 @@
+---
+# tasks file for loadbalancer
+- name: Install required packages
+  yum:
+    state: present
+    name:
+      - bind-utils
+      - firewalld
+      - haproxy
