@@ -4,7 +4,7 @@
   become: yes
   tasks:
   - fail:
-      msg: Need to specify guest variable (-e guest=<name>)
+      msg: Need to specify guest variable (-e guest=<name>) and an optional host (-e host=<host name>)
     when: guest is not defined
 
   - name: Check if {{ guest }} is defined
