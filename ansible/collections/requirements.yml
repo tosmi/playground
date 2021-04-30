@@ -1,2 +1,9 @@
 collections:
-  - community.general
+  - name: community.general
+    version: 3.0.0
+
+  - name: ansible.posix
+    version: 1.2.0
+
+  - name: awx.awx
+    version: 19.0.0
