@@ -22,7 +22,7 @@
           cpu: 1
           register: yes
           activationkey: "RHEL 8"
-          image: rhel-8.2-update-2-x86_64-kvm.qcow2
+          image: rhel-8.3-update-2-x86_64-kvm.qcow2
   roles:
     - lab
     - loadbalancer
