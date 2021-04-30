@@ -67,17 +67,17 @@ listen stats
     monitor-uri /healthz
 
 frontend tower-http
-    bind 10.0.0.201:80
+    bind 10.0.0.212:80
     default_backend tower-http
     option tcplog
 
-backend tower-https
+backend tower-http
     balance source
     server tower01-http tower01.lan.stderr.at:80 check
     server tower02-http tower02.lan.stderr.at:80 check
 
 frontend tower-https
-    bind 10.0.0.201:443
+    bind 10.0.0.212:443
     default_backend tower-https
     option tcplog
 

@@ -7,3 +7,32 @@
       - bind-utils
       - firewalld
       - haproxy
+
+- name: Add tower service ip address with nmcli
+  command: /bin/nmcli con modify 'System eth0' +ipv4.addresses "10.0.0.212/24"
+  notify:
+    - Restart NetworkManager
+
+- name: Allow incoming HTTP connections
+  ansible.posix.firewalld:
+    service: http
+    permanent: yes
+    immediate: yes
+    state: enabled
+
+- name: Allow incoming HTTPS connections
+  ansible.posix.firewalld:
+    service: https
+    permanent: yes
+    immediate: yes
+    state: enabled
+
+- name: Deploy HAProxy config template
+  template:
+    src: haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy.cfg
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - Restart HAProxy

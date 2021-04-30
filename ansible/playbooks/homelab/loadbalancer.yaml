@@ -1,28 +1,32 @@
-- name: Create a loadbalancer (HAProxy) host
+# - name: Create a loadbalancer (HAProxy) host
+#   gather_facts: no
+#   become: yes
+#   hosts:
+#     - localhost
+#   vars:
+#     rhn:
+#       host: https://satellite.lan.stderr.at
+#       org_id: 1
+#     lab:
+#       ssh_public_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIYhjnWzsArZVyyTa1E6sDbH06rUGDAhAF3bf3pmeBtm toni@stderr.at"
+#       name: lb
+#       network:
+#         type: bridge
+#         name: bridge0
+#       hosts:
+#         - name: loadbalancer
+#           network: bridge0
+#           macaddr: "52:54:00:01:52:00"
+#           ipaddr: "10.0.0.200"
+#           memory: 1024
+#           cpu: 1
+#           register: yes
+#           activationkey: "RHEL 8"
+#           image: rhel-8.3-update-2-x86_64-kvm.qcow2
+#   roles:
+#     - lab
+- name: Configure loadbalancer host
+  hosts: loadbalancer
   gather_facts: no
-  become: yes
-  hosts:
-    - localhost
-  vars:
-    rhn:
-      host: https://satellite.lan.stderr.at
-      org_id: 1
-    lab:
-      ssh_public_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIYhjnWzsArZVyyTa1E6sDbH06rUGDAhAF3bf3pmeBtm toni@stderr.at"
-      name: lb
-      network:
-        type: bridge
-        name: bridge0
-      hosts:
-        - name: loadbalancer
-          network: bridge0
-          macaddr: "52:54:00:01:52:00"
-          ipaddr: "10.0.0.200"
-          memory: 1024
-          cpu: 1
-          register: yes
-          activationkey: "RHEL 8"
-          image: rhel-8.3-update-2-x86_64-kvm.qcow2
   roles:
-    - lab
     - loadbalancer
