@@ -1,0 +1,54 @@
+- name: Create GitLab host
+  gather_facts: no
+  become: yes
+  hosts:
+    - box03.lan.stderr.at
+  vars:
+    rhn:
+      host: https://satellite.lan.stderr.at
+      org_id: 1
+    lab:
+      ssh_public_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIYhjnWzsArZVyyTa1E6sDbH06rUGDAhAF3bf3pmeBtm toni@stderr.at"
+      name: gitlab
+      network:
+        type: bridge
+        name: bridge0
+      hosts:
+        - name: gitlab
+          network: bridge0
+          macaddr: "52:54:00:01:52:18"
+          ipaddr: "10.0.0.218"
+          memory: 4096
+          cpu: 2
+          register: yes
+          activationkey: "RHEL 8"
+          image: rhel-8.3-update-2-x86_64-kvm.qcow2
+          disksize: 150G
+  roles:
+    - lab
+
+- name: Configure GitLab host
+  hosts: gitlab
+  gather_facts: yes
+  vars:
+    gitlab_domain: gitlab.lan.stderr.at
+    gitlab_nginx_listen_https: "true"
+    gitlab_redirect_http_to_https: "true"
+    gitlab_create_self_signed_cert: "true"
+    gitlab_letsencrypt_enable: "false"
+    gitlab_letsencrypt_contact_emails: ''
+    gitlab_self_signed_cert_subj: "/C=AT/ST=Lower Austria/L=Langenlois/O=IT/CN={{ gitlab_domain }}"
+    gitlab_ldap_enabled: "true"
+    gitlab_ldap_host: "idm.lan.stderr.at"
+    gitlab_ldap_port: "389"
+    gitlab_ldap_uid: "uid"
+    gitlab_ldap_method: "plain"
+    gitlab_ldap_bind_dn: "CN=Username,CN=Users,DC=example,DC=com"
+    gitlab_ldap_password: "password"
+    gitlab_ldap_base: "DC=example,DC=com"
+    gitlab_registry_enable: "true"
+    gitlab_registry_external_url: "https://gitlab.example.com:4567"
+    gitlab_registry_nginx_ssl_certificate: "/etc/gitlab/ssl/gitlab.crt"
+    gitlab_registry_nginx_ssl_certificate_key: "/etc/gitlab/ssl/gitlab.key"
+  roles:
+    - geerlingguy.gitlab

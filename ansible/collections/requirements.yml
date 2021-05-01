@@ -1,3 +1,7 @@
+roles:
+  - name: geerlingguy.gitlab
+    version: 3.1.0
+
 collections:
   - name: community.general
     version: 3.0.0
