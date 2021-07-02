@@ -1,2 +1,18 @@
 ---
 # tasks file for tower
+- name: Upload manifest.zip
+  awx.awx.license:
+    tower_host: https://tower.lan.stderr.at
+    tower_username: "{{ tower_username }}"
+    tower_password: "{{ tower_password }}"
+    manifest: "{{ tower_zip}}"
+    force: yes
+    validate_certs: no
+
+- name: Set the tower url in settings
+  awx.awx.settings:
+    name: TOWER_URL_BASE
+    tower_host: "{{ tower_url_base }}"
+    tower_username: "{{ tower_username }}"
+    tower_password: "{{ tower_password }}"
+    validate_certs: no
