@@ -9,5 +9,6 @@ collections:
   - name: ansible.posix
     version: 1.2.0
 
-  - name: awx.awx
-    version: 19.0.0
+  - name: ansible.tower
+    version: 3.8.3
+    https://cloud.redhat.com/api/automation-hub/
