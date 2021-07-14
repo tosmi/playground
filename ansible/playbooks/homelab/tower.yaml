@@ -1,88 +1,95 @@
 ---
-- name: Create Ansible Tower hosts on box02
-  gather_facts: no
-  become: yes
-  hosts:
-    - box02.lan.stderr.at
-  vars:
-    rhn:
-      host: https://satellite.lan.stderr.at
-      org_id: "1"
-    lab:
-      ssh_public_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIYhjnWzsArZVyyTa1E6sDbH06rUGDAhAF3bf3pmeBtm toni@stderr.at"
-      name: infra
-      network:
-        type: bridge
-        name: bridge0
-      hosts:
-        - name: tower01
-          network: bridge0
-          macaddr: "52:54:00:01:52:13"
-          ipaddr: "10.0.0.213"
-          # disksize: 20
-          memory: 5210
-          cpu: 2
-          register: yes
-          activationkey: RHEL 8
-          image: rhel-8.3-update-2-x86_64-kvm.qcow2
-        - name: tower02
-          network: bridge0
-          macaddr: "52:54:00:01:52:14"
-          ipaddr: "10.0.0.214"
-          # disksize: 20G
-          memory: 5120
-          cpu: 2
-          register: yes
-          activationkey: RHEL 8
-          image: rhel-8.3-update-2-x86_64-kvm.qcow2
-  roles:
-    - lab
+# - name: Create Ansible Tower hosts on box02
+#   gather_facts: no
+#   become: yes
+#   hosts:
+#     - box02.lan.stderr.at
+#   vars:
+#     rhn:
+#       host: https://satellite.lan.stderr.at
+#       org_id: "1"
+#     lab:
+#       ssh_public_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIYhjnWzsArZVyyTa1E6sDbH06rUGDAhAF3bf3pmeBtm toni@stderr.at"
+#       name: infra
+#       network:
+#         type: bridge
+#         name: bridge0
+#       hosts:
+#         - name: tower01
+#           network: bridge0
+#           macaddr: "52:54:00:01:52:13"
+#           ipaddr: "10.0.0.213"
+#           # disksize: 20
+#           memory: 5210
+#           cpu: 2
+#           register: yes
+#           activationkey: RHEL 8
+#           image: rhel-8.3-update-2-x86_64-kvm.qcow2
+#         - name: tower02
+#           network: bridge0
+#           macaddr: "52:54:00:01:52:14"
+#           ipaddr: "10.0.0.214"
+#           # disksize: 20G
+#           memory: 5120
+#           cpu: 2
+#           register: yes
+#           activationkey: RHEL 8
+#           image: rhel-8.3-update-2-x86_64-kvm.qcow2
+#   roles:
+#     - lab
 
-- name: create lab network and hosts
+# - name: Create Ansible Tower hosts on box03
+#   gather_facts: no
+#   become: yes
+#   hosts:
+#     - box03.lan.stderr.at
+#   vars:
+#     rhn:
+#       host: https://satellite.lan.stderr.at
+#       org_id: "1"
+#     lab:
+#       ssh_public_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIYhjnWzsArZVyyTa1E6sDbH06rUGDAhAF3bf3pmeBtm toni@stderr.at"
+#       name: infra
+#       network:
+#         type: bridge
+#         name: bridge0
+#       hosts:
+#         - name: tower03
+#           network: bridge0
+#           macaddr: "52:54:00:01:52:15"
+#           ipaddr: "10.0.0.215"
+#           # disksize: 20G
+#           memory: 5120
+#           cpu: 2
+#           register: yes
+#           activationkey: RHEL 8
+#           image: rhel-8.3-update-2-x86_64-kvm.qcow2
+#         - name: hub
+#           network: bridge0
+#           macaddr: "52:54:00:01:52:16"
+#           ipaddr: "10.0.0.216"
+#           # disksize: 20G
+#           memory: 5120
+#           cpu: 2
+#           register: yes
+#           activationkey: RHEL 8
+#           image: rhel-8.3-update-2-x86_64-kvm.qcow2
+#         - name: pgsql
+#           network: bridge0
+#           macaddr: "52:54:00:01:52:17"
+#           ipaddr: "10.0.0.217"
+#           # disksize: 50G
+#           memory: 2048
+#           cpu: 2
+#           register: yes
+#           activationkey: RHEL 8
+#           image: rhel-8.3-update-2-x86_64-kvm.qcow2
+#   roles:
+#     - lab
+
+- name: Configure Ansible Tower
   gather_facts: no
-  become: yes
   hosts:
-    - box03.lan.stderr.at
-  vars:
-    rhn:
-      host: https://satellite.lan.stderr.at
-      org_id: "1"
-    lab:
-      ssh_public_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIYhjnWzsArZVyyTa1E6sDbH06rUGDAhAF3bf3pmeBtm toni@stderr.at"
-      name: infra
-      network:
-        type: bridge
-        name: bridge0
-      hosts:
-        - name: tower03
-          network: bridge0
-          macaddr: "52:54:00:01:52:15"
-          ipaddr: "10.0.0.215"
-          # disksize: 20G
-          memory: 5120
-          cpu: 2
-          register: yes
-          activationkey: RHEL 8
-          image: rhel-8.3-update-2-x86_64-kvm.qcow2
-        - name: hub
-          network: bridge0
-          macaddr: "52:54:00:01:52:16"
-          ipaddr: "10.0.0.216"
-          # disksize: 20G
-          memory: 5120
-          cpu: 2
-          register: yes
-          activationkey: RHEL 8
-          image: rhel-8.3-update-2-x86_64-kvm.qcow2
-        - name: pgsql
-          network: bridge0
-          macaddr: "52:54:00:01:52:17"
-          ipaddr: "10.0.0.217"
-          # disksize: 50G
-          memory: 2048
-          cpu: 2
-          register: yes
-          activationkey: RHEL 8
-          image: rhel-8.3-update-2-x86_64-kvm.qcow2
+    - localhost
   roles:
-    - lab
+    - tower

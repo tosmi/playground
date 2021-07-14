@@ -32,6 +32,44 @@
         state: running
       loop:
         - infra01
-        - infra02
         - worker01
+
+- name: Start box01 hosts
+  hosts: box01.lan.stderr.at
+  become: no
+  gather_facts: no
+  tasks:
+    - name: Start nodes
+      virt:
+        name: "{{ item }}"
+        state: running
+      loop:
+        - stor01
+        - infra02
         - worker02
+
+- name: Start box02 hosts
+  hosts: box02.lan.stderr.at
+  become: no
+  gather_facts: no
+  tasks:
+    - name: Start nodes
+      virt:
+        name: "{{ item }}"
+        state: running
+      loop:
+        - stor02
+        - worker03
+        - worker04
+
+- name: Start box03 hosts
+  hosts: box03.lan.stderr.at
+  become: no
+  gather_facts: no
+  tasks:
+    - name: Start nodes
+      virt:
+        name: "{{ item }}"
+        state: running
+      loop:
+        - stor03
