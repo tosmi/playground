@@ -1,3 +1,0 @@
-# from GitHub, overriding the name and specifying a specific tag
-- src: https://github.com/tosmi/ocp4-helpernode
-  version: next

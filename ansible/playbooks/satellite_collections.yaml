@@ -1,0 +1,51 @@
+# https://issues.redhat.com/browse/SAT-2305
+# https://bugzilla.redhat.com/show_bug.cgi?id=1901725
+
+- name: Play with Satellite 6 host collections
+  hosts: localhost
+  vars:
+    collection: "TestCollection"
+    host: localhost
+    satellite_host: localhost
+    satellite_username: admin
+    satellite_password: redhat
+  tasks:
+    - name: Create a new collection for testing
+      redhat.satellite.host_collection:
+        username: "{{ satellite_username }}"
+        password: "{{ satellite_password }}"
+        server_url: "{{ satellite_host }}"
+        validate_certs: no
+        name: "TestCollection"
+        description: "Test Collection"
+        organization: "Lab"
+        state: present
+
+    - name: Dump host info
+      redhat.satellite.host_info:
+        username: "{{ satellite_username }}"
+        password: "{{ satellite_password }}"
+        server_url: "{{ satellite_host }}"
+        validate_certs: no
+        name: "box01.lan.stderr.at"
+      register: host_info
+
+    - debug:
+        msg: "{{ host_info.host.id }}"
+
+    - name: Add host to collection via ID
+      uri:
+        url: "{{ satellite_host }}/katello/api/host_collections/1/add_hosts"
+        user: "{{ satellite_username }}"
+        password: "{{ satellite_password }}"
+        method: PUT
+        return_content: yes
+        force_basic_auth: yes
+        validate_certs: no
+        body_format: json
+        body: '{ "host_ids": [ "{{ host_info.host.id }}" ] }'
+      register: result
+      changed_when: "result.content is match('.*Successfully added 1 Host')"
+
+    - debug:
+        msg: "{{result.content}}"
