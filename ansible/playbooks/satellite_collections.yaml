@@ -49,3 +49,20 @@
 
     - debug:
         msg: "{{result.content}}"
+
+    - name: Remove host from collection via ID
+      uri:
+        url: "{{ satellite_host }}/katello/api/host_collections/1/remove_hosts"
+        user: "{{ satellite_username }}"
+        password: "{{ satellite_password }}"
+        method: PUT
+        return_content: yes
+        force_basic_auth: yes
+        validate_certs: no
+        body_format: json
+        body: '{ "host_ids": [ "{{ host_info.host.id }}" ] }'
+      register: result
+      changed_when: "result.content is match('.*Successfully removed 1 Host')"
+
+    - debug:
+        msg: "{{result.content}}"
