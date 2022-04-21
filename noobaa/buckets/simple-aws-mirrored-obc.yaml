@@ -1,0 +1,9 @@
+apiVersion: objectbucket.io/v1alpha1
+kind: ObjectBucketClaim
+metadata:
+  labels:
+    app: noobaa
+  name: aws-mirrored-claim
+spec:
+  generateBucketName: aws-mirrored
+  storageClassName: aws-mirrored-openshift-storage.noobaa.io

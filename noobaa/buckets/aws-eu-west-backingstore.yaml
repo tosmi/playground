@@ -1,0 +1,15 @@
+apiVersion: noobaa.io/v1alpha1
+kind: BackingStore
+metadata:
+  labels:
+    app: noobaa
+  name: aws-eu-west
+  namespace: openshift-storage
+spec:
+  awsS3:
+    region: eu-west-1
+    secret:
+      name: backing-store-aws-s3-aws-eu-west
+      namespace: openshift-storage
+    targetBucket: tosmi-eu-west-1
+  type: aws-s3

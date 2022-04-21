@@ -1,0 +1,11 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  annotations:
+    description: Provides Mirrored Object Bucket Claims (OBCs) in AWS
+  name: aws-mirrored-openshift-storage.noobaa.io
+parameters:
+  bucketclass: aws-mirrored-bucket-class
+provisioner: openshift-storage.noobaa.io/obc
+reclaimPolicy: Delete
+volumeBindingMode: Immediate

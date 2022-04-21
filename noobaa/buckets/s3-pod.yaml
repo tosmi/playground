@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: s3test
+  name: s3-test-pod
+spec:
+  containers:
+  - image: d3fk/s3cmd:latest
+    name: s3-test-pod
+    env:
+    - name: BUCKET_NAME
+      valueFrom:
+        configMapKeyRef:
+          name: aws-mirrored-claim
+          key: BUCKET_NAME
+    - name: BUCKET_HOST
+      valueFrom:
+        configMapKeyRef:
+          name: aws-mirrored-claim
+          key: BUCKET_HOST
+    - name: BUCKET_PORT
+      valueFrom:
+        configMapKeyRef:
+          name: aws-mirrored-claim
+          key: BUCKET_PORT
+    - name: AWS_ACCESS_KEY_ID
+      valueFrom:
+        secretKeyRef:
+          name: aws-mirrored-claim
+          key: AWS_ACCESS_KEY_ID
+    - name: AWS_SECRET_ACCESS_KEY
+      valueFrom:
+        secretKeyRef:
+          name: aws-mirrored-claim
+          key: AWS_SECRET_ACCESS_KEY
+    command:
+    - s3cmd
+    - -c 
+    - /etc/s3/s3.cfg
+    - ls
+    - s3://aws-mirrored-a889604a-aa2d-477b-94b1-44acbd6bfca8 
+    volumeMounts:
+      - name: s3cfg
+        mountPath: "/etc/s3"
+        readOnly: true
+  volumes:
+  - name: s3cfg
+    configMap:
+      name: s3cfg

@@ -1,0 +1,13 @@
+apiVersion: v1
+data:
+  s3.cfg: |
+    [default]
+    check_ssl_certificate = False
+    check_ssl_hostname = False
+    # access_key = 
+    # secret_key =
+    host_base = s3-openshift-storage.apps.ocp.aws.tntinfra.net
+    host_bucket = %(bucket).s3-openshift-storage.apps.ocp.aws.tntinfra.net
+kind: ConfigMap
+metadata:
+  name: s3cfg

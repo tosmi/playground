@@ -1,0 +1,12 @@
+apiVersion: objectbucket.io/v1alpha1
+kind: ObjectBucketClaim
+metadata:
+  labels:
+    app: noobaa
+  name: aws-primary-bucket
+spec:
+  generateBucketName: aws-primary-bucket
+  storageClassName: aws-mirrored-openshift-storage.noobaa.io
+  additionalConfig:
+    replication-policy: |
+      [{ "rule_id": "rule-1", "destination_bucket": "aws-secondary-bucket", "filter": {"prefix": "repl"}}]
