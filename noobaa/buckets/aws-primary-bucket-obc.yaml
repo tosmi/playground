@@ -9,4 +9,4 @@ spec:
   storageClassName: aws-mirrored-openshift-storage.noobaa.io
   additionalConfig:
     replication-policy: |
-      [{ "rule_id": "rule-1", "destination_bucket": "aws-secondary-bucket", "filter": {"prefix": "repl"}}]
+      [{ "rule_id": "rule-1", "destination_bucket": "first.bucket", "filter": {"prefix": "repl"}}]
