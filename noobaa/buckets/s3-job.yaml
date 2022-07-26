@@ -1,0 +1,43 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: s3-test-job
+spec:
+  template: 
+    metadata:
+      name: s3-pod
+    spec:
+      containers:
+      - image: d3fk/s3cmd:latest
+        name: s3-pod
+        env:
+        - name: BUCKET_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: aws-mirrored-claim
+              key: BUCKET_NAME
+        - name: BUCKET_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: aws-mirrored-claim
+              key: BUCKET_HOST
+        - name: BUCKET_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: aws-mirrored-claim
+              key: BUCKET_PORT
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: aws-mirrored-claim
+              key: AWS_ACCESS_KEY_ID
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: aws-mirrored-claim
+              key: AWS_SECRET_ACCESS_KEY
+        command: 
+        - /bin/sh
+        - -c  
+        - 's3cmd --host $BUCKET_HOST --host-bucket "%(bucket).$BUCKET_HOST" --no-check-certificate ls s3://$BUCKET_NAME'
+      restartPolicy: Never

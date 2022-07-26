@@ -34,17 +34,7 @@ spec:
         secretKeyRef:
           name: aws-mirrored-claim
           key: AWS_SECRET_ACCESS_KEY
-    command:
-    - s3cmd
-    - -c 
-    - /etc/s3/s3.cfg
-    - ls
-    - s3://aws-mirrored-a889604a-aa2d-477b-94b1-44acbd6bfca8 
-    volumeMounts:
-      - name: s3cfg
-        mountPath: "/etc/s3"
-        readOnly: true
-  volumes:
-  - name: s3cfg
-    configMap:
-      name: s3cfg
+    command: 
+    - /bin/sh
+    - -c  
+    - 's3cmd --host $BUCKET_HOST --host-bucket "%(bucket).$BUCKET_HOST" --no-check-certificate ls s3://$BUCKET_NAME'
