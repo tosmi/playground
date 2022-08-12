@@ -1,0 +1,11 @@
+apiVersion: k8s.ovn.org/v1
+kind: EgressIP
+metadata:
+  name: egressips-prod-different-subnet
+spec:
+  egressIPs:
+  - 10.1.0.68
+  - 10.1.0.69
+  namespaceSelector:
+    matchLabels:
+      env: prod
