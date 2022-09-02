@@ -1,0 +1,19 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: volume-shell
+  namespace: costmanagement-metrics-operator
+  labels:
+    app: costmanagement-metrics-operator
+spec:
+  volumes:
+  - name: costmanagement-metrics-operator-reports
+    persistentVolumeClaim:
+      claimName: costmanagement-metrics-operator-data
+  containers:
+  - name: volume-shell
+    image: busybox
+    command: ['sleep', 'infinity']
+    volumeMounts:
+    - name: costmanagement-metrics-operator-reports
+      mountPath: /tmp/costmanagement-metrics-operator-reports

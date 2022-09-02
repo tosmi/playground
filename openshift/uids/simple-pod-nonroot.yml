@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: simple-pod-nonroot
+    openshift-example: "yes"
+  name: simple-pod-nonroot
+spec:
+  serviceAccount: nonroot
+  serviceAccountName: nonroot
+  containers:
+  - image: registry.redhat.io/ubi9/ubi:latest
+    name: simple-pod-nonroot
+    securityContext:
+      runAsUser: 1024
+    command:
+      - sh
+      - -c
+      - 'echo "hello world" && sleep infinity'
