@@ -1,0 +1,71 @@
+apiVersion: machine.openshift.io/v1beta1
+kind: MachineSet
+metadata:
+  labels:
+    machine.openshift.io/cluster-api-cluster: ocp-r9tf4
+  name: ocp-r9tf4-windows-worker-eu-central-1a
+  namespace: openshift-machine-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      machine.openshift.io/cluster-api-cluster: ocp-r9tf4
+      machine.openshift.io/cluster-api-machineset: ocp-r9tf4-windows-worker-eu-central-1a
+  template:
+    metadata:
+      labels:
+        machine.openshift.io/cluster-api-cluster: ocp-r9tf4
+        machine.openshift.io/cluster-api-machine-role: worker
+        machine.openshift.io/cluster-api-machine-type: worker
+        machine.openshift.io/cluster-api-machineset: ocp-r9tf4-windows-worker-eu-central-1a
+        machine.openshift.io/os-id: Windows
+    spec:
+      metadata:
+        labels:
+          node-role.kubernetes.io/worker: "" 
+      providerSpec:
+        value:
+          ami:
+            # Windows_Server-2019-English-Full-Base-2022.08.10
+            # orig id: ami-0471e6514b3dd711e
+            # id: ami-0c6e3ed6b1dd28a39
+            # amazon/Windows_Server-2019-English-Full-ContainersLatest-2022.09.14
+            id: ami-0a96a0a70a71e4fee
+          # apiVersion: machine.openshift.io/v1beta1
+          apiVersion: awsproviderconfig.openshift.io/v1beta1
+          blockDevices:
+          - ebs:
+              iops: 0
+              volumeSize: 120
+              volumeType: gp2
+          credentialsSecret:
+            name: aws-cloud-credentials
+          deviceIndex: 0
+          iamInstanceProfile:
+            id: ocp-r9tf4-worker-profile
+          instanceType: m5a.large
+          kind: AWSMachineProviderConfig
+          metadata:
+            creationTimestamp: null
+          metadataServiceOptions: {}
+          placement:
+            availabilityZone: eu-central-1a
+            region: eu-central-1
+          securityGroups:
+          - filters:
+            - name: tag:Name
+              values:
+              - ocp-r9tf4-worker-sg
+          subnet:
+            filters:
+            - name: tag:Name
+              values:
+              - ocp-r9tf4-private-eu-central-1a
+          tags:
+          - name: kubernetes.io/cluster/ocp-r9tf4
+            value: owned
+          - name: cluster
+            value: ocp
+          userDataSecret:
+            name: windows-user-data
+            namespace: openshift-machine-api

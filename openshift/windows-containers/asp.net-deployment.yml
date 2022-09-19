@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: asp-deployment
+  labels:
+    app: asp
+    openshift-example: "yes"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: asp
+  template:
+    metadata:
+      labels:
+        app: asp
+        openshift-example: "yes"
+    spec:
+      containers:
+      - name: asp
+        image: mcr.microsoft.com/dotnet/framework/samples:aspnetapp
+        ports:
+        - containerPort: 8000
