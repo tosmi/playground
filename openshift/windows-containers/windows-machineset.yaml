@@ -22,7 +22,7 @@ spec:
     spec:
       metadata:
         labels:
-          node-role.kubernetes.io/worker: "" 
+          node-role.kubernetes.io/worker: ""
       providerSpec:
         value:
           ami:
