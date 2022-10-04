@@ -1,0 +1,22 @@
+apiVersion: serving.knative.dev/v1
+kind: Configuration
+metadata:
+  name: hello-example
+  namespace: test
+spec:
+  template:
+    spec:
+      containerConcurrency: 0
+      containers:
+      - env:
+        - name: TARGET
+          value: Second
+        image: gcr.io/knative-samples/helloworld-go
+        name: user-container
+        readinessProbe:
+          successThreshold: 1
+          tcpSocket:
+            port: 0
+        resources: {}
+      enableServiceLinks: false
+      timeoutSeconds: 300

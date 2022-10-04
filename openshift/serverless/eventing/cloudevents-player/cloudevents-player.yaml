@@ -1,0 +1,17 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: cloudevents-player
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "1"
+    spec:
+      containers:
+        - image: quay.io/ruben/cloudevents-player:latest
+          env:
+            - name: PLAYER_MODE
+              value: KNATIVE
+            - name: PLAYER_BROKER
+              value: default
