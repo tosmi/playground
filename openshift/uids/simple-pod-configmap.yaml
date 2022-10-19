@@ -1,0 +1,36 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: the-configmap
+data:
+  property1: value1
+  property2: value2
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: simple-pod
+    openshift-example: "yes"
+  name: simple-pod
+spec:
+  serviceAccount: nonroot
+  serviceAccountName: nonroot
+  containers:
+  - image: registry.redhat.io/ubi9/ubi:latest
+    name: simple-pod
+    securityContext:
+      fsgroup: 1024
+    command:
+      - sh
+      - -c
+      - 'echo "hello world" && sleep infinity'
+    volumeMounts:
+      - name: configmap
+        mountPath: "/configmap/"
+        readOnly: true
+  volumes:
+  - name: configmap
+    configMap:
+      name: the-configmap
