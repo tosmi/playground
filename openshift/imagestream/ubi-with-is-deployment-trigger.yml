@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"ubi-is:latest"},"fieldPath":"spec.template.spec.containers[?(@.name==\"ubi\")].image"}]'
+  labels:
+    app: ubi-with-is
+  name: ubi-with-is
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ubi-with-is
+  template:
+    metadata:
+      labels:
+        app: ubi-with-is
+    spec:
+      containers:
+      - command:
+        - sh
+        - -c
+        - echo "hello world" && sleep infinity
+        image: quay.io/tosmi/ubi@sha256:c6184bf1780638e3d1032030cf6381e40627ed66410405daad6543fa4dbf8fed

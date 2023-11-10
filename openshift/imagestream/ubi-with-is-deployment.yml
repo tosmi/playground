@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ubi-with-is
+  labels:
+    app: ubi-with-is
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ubi-with-is
+  template:
+    metadata:
+      labels:
+        app: ubi-with-is
+    spec:
+      containers:
+      - name: ubi
+        image: image-registry.openshift-image-registry.svc:5000/test/ubi-is:latest
+        command:
+          - sh
+          - -c
+          - 'echo "hello world" && sleep infinity'
