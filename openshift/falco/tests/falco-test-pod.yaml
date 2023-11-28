@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: simple-pod
+  name: falco-test-pod
+spec:
+  containers:
+  - image: registry.redhat.io/ubi9/ubi:9.2
+    name: falco-test-pod
+    command:
+      - sh
+      - -c
+      - 'echo "hello falco!" && sleep infinity'
