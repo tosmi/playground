@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stress-ng-requests
+  labels:
+    app: stress-ng-requests
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: stress-ng-requests
+  template:
+    metadata:
+      labels:
+        app: stress-ng-requests
+        openshift-example: "yes"
+    spec:
+      containers:
+      - name: nginx
+        image: quay.io/tosmi/stress-ng:latest
+        args:
+        - "-c"
+        - "0"
+        - "-l"
+        - "100"
+        resources:
+          requests:
+            cpu: 500m
