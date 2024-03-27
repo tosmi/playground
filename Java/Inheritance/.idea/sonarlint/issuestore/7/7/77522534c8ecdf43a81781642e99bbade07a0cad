@@ -1,0 +1,10 @@
+
+œ	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(íÜòô8µ×¼è1J$42525dbd-9895-4f68-a873-4666823fbcd5
+l	java:S106"+Replace this use of System.out by a logger.(”¹Á8¾×¼è1J$84c6fd25-68a0-46a8-8fe3-e773662d2e78
+r	java:S106"+Replace this use of System.out by a logger.(é²Èúÿÿÿÿ8¾×¼è1J$87cda774-fb93-41b9-9e24-1ddbae3df4b4
+m	java:S106"+Replace this use of System.out by a logger.(È¡Ş§8¾×¼è1J$4927b1f0-b2dd-4441-84c7-2da9d224779e
+t
+java:S3985"1Remove this unused private "InnerExtended" class.(ªÃğÏ8¿×¼è1J$f51f5b94-76c5-4e17-84cd-19d8c9495250
+r	java:S106"+Replace this use of System.out by a logger.(é²Èúÿÿÿÿ8À×¼è1J$06850f5d-0642-4726-8e22-3ffbfa8440e3
+r	java:S106 "+Replace this use of System.out by a logger.(³öÌÜÿÿÿÿÿ8À×¼è1J$7819e11d-0171-4c70-a1e5-4f906627b9f6
+m	java:S106!"+Replace this use of System.out by a logger.(£ËË8À×¼è1J$85279096-e191-4df2-a56b-91a7de2b0c8c

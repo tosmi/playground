@@ -1,0 +1,17 @@
+
+™
+java:S1192"QDefine a constant instead of duplicating this literal " InnerBaseDesc: " 3 times.(âé’şÿÿÿÿ8èàŠè1J$e1dc64ca-e66c-4f79-9daa-f4187eb0de53
+š
+java:S1192"RDefine a constant instead of duplicating this literal " OuterClassDesc: " 3 times.(ĞãÍŞüÿÿÿÿ8èàŠè1J$8bfe9861-94c4-4bf3-a3e9-297a3b3e1db1
+œ	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(íÜòô8êàŠè1J$d37c3945-ebd9-4c49-bcde-43f450601368
+r	java:S106"+Replace this use of System.out by a logger.(ĞãÍŞüÿÿÿÿ8øàŠè1J$fbca30a4-6861-40ad-becb-8393892ddf4d
+r	java:S106"+Replace this use of System.out by a logger.(âé’şÿÿÿÿ8ùàŠè1J$8a1ee7c9-13ec-49b5-a162-e9c89b23c52d
+m	java:S106"+Replace this use of System.out by a logger.(ÕÙÍæ8ùàŠè1J$f65eb655-5589-4259-bd52-a86c2386e534
+r	java:S106 "+Replace this use of System.out by a logger.(ĞãÍŞüÿÿÿÿ8üàŠè1J$3fa6e0fe-582c-4a35-b820-caf14872ea43
+r	java:S106!"+Replace this use of System.out by a logger.(®é£Şÿÿÿÿÿ8üàŠè1J$3a22d1dd-3af6-499a-8806-50cc09967c67
+r	java:S106$"+Replace this use of System.out by a logger.(ù…´Ãıÿÿÿÿ8ıàŠè1J$479ca046-6c22-4094-8922-4cf2c12be9be
+r	java:S1060"+Replace this use of System.out by a logger.(ĞãÍŞüÿÿÿÿ8ÿàŠè1J$c2dfe1e1-0edb-4422-a781-9a56a4532071
+r	java:S1064"+Replace this use of System.out by a logger.(ĞæğÆùÿÿÿÿ8ÿàŠè1J$31543b03-25d2-4370-8dcc-967a3de30f53
+r	java:S1067"+Replace this use of System.out by a logger.(¤œºËÿÿÿÿÿ8€áŠè1J$0bffa255-5db5-4775-9a08-26ccc59d6d86
+r	java:S106<"+Replace this use of System.out by a logger.(“„Æ²ùÿÿÿÿ8€áŠè1J$40328062-2bce-4d27-b69f-fac7b2f48f6f
+}	java:S125:"<This block of commented-out lines of code should be removed.(ƒâù8áŠè1J$c9f770d9-e0ed-4795-85b8-239a4235f5c4
