@@ -3,3 +3,4 @@
 /terraform/azure/tower/terraform.tfstate
 /terraform/azure/tower/terraform.tfstate.backup
 /noobaa/__pycache__/
+/***/.idea/
