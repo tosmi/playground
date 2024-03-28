@@ -1,0 +1,20 @@
+FROM  registry.access.redhat.com/ubi9/ubi:9.3
+
+LABEL maintainer="Toni"
+
+LABEL name="stress-ng" \
+      version="0.1"
+
+LABEL summary="Provides stress-ng"
+LABEL description="The Universal Base Image is designed and engineered to be the base layer for all of your containerized applications, middleware and utilities. This base image is freely redistributable, but Red Hat only supports Red Hat technologies through subscriptions for Red Hat products. This image is maintained by Red Hat and updated regularly."
+LABEL io.k8s.display-name="Red Hat UBI 9 with stress-ng installed"
+LABEL io.openshift.tags="rhel9 stress-ng"
+
+RUN dnf -y install stress-ng \
+    && dnf clean all \
+    && useradd -u 1001 stress-ng
+
+USER 1001
+WORKDIR /tmp
+
+ENTRYPOINT ["/usr/bin/stress-ng"]
