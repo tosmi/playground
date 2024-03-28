@@ -14,6 +14,9 @@ public class OuterClass {
     public void dumpOuterState () {
         System.out.println(this.getClass().getSimpleName() + " OuterClassDesc: " + outerClassDesc);
         System.out.println(this.getClass().getSimpleName() + " InnerBaseDesc: " + innerBase.innerBaseDesc);
+
+        // innerBasedesc is inherited by innerExtended so we do not have access to this field
+        //System.out.println(this.getClass().getSimpleName() + " InnerExtendedDesc: " + innerExtended.innerBaseDesc);
         System.out.println(this.getClass().getSimpleName() + " InnerExtendedDesc: " + innerExtended.innerExtendeDesc);
 
         innerBase.dumpInnerState();
