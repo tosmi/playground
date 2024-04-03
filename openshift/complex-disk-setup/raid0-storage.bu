@@ -1,0 +1,40 @@
+variant: openshift
+version: 4.14.0
+metadata:
+  name: raid0-storage
+  labels:
+    machineconfiguration.openshift.io/role: worker
+ignition:
+  config:
+    merge:
+      - source: https://api-int.ecp4nobud.ecp.lan.at:22623/config/worker
+  security:
+    tls:
+      certificate_authorities:
+        - source: data:text/plain;charset=utf8;base64,YmxhCg==
+storage:
+  disks:
+    - device: /dev/sda
+      wipe_table: true
+      partitions:
+        - label: data-0
+    - device: /dev/sdb
+      wipe_table: true
+      partitions:
+        - label: data-1
+    - device: /dev/sdc
+      wipe_table: true
+      partitions:
+        - label: data-2
+  raid:
+    - name: root
+      level: raid0
+      devices:
+        - /dev/disk/by-partlabel/data-0
+        - /dev/disk/by-partlabel/data-1
+        - /dev/disk/by-partlabel/data-2
+  filesystems:
+    - device: /dev/md/root
+      label: root
+      format: xfs
+      wipe_filesystem: true

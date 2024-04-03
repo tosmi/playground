@@ -1,0 +1,35 @@
+ignition:
+  version: 3.2.0
+  config:
+    merge:
+      - source: https://api-int.ecp4nobud.ecp.lan.at:22623/config/worker
+  security:
+    tls:
+     certificateAuthorities:
+       - source: data:text/plain;charset=utf8;base64,YmxhCg==
+storage:
+  disks:
+    - device: /dev/sda
+      partitions:
+        - label: data-0
+      wipeTable: true
+    - device: /dev/sdb
+      partitions:
+        - label: data-1
+      wipeTable: true
+    - device: /dev/sdc
+      partitions:
+        - label: data-2
+      wipeTable: true
+  raid:
+    - devices:
+        - /dev/disk/by-partlabel/data-0
+        - /dev/disk/by-partlabel/data-1
+        - /dev/disk/by-partlabel/data-2
+      level: raid0
+      name: root
+  filesystems:
+    - device: /dev/md/root
+      format: xfs
+      label: root
+      wipeFilesystem: true
