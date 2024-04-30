@@ -1,0 +1,14 @@
+kind: TaskRun
+apiVersion: tekton.dev/v1
+metadata:
+  name: multiarch-manifest-create
+spec:
+  taskRef:
+    name: multiarch-manifest-create
+  params:
+    - name: images
+      value:
+        - quay.io/tosmi/example-container:v1.0-x86
+        - quay.io/tosmi/example-container:v1.0-arm
+    - name: multiarch-image
+      value: quay.io/tosmi/example-container:v1.0

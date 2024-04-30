@@ -1,0 +1,18 @@
+apiVersion: shipwright.io/v1beta1
+kind: Build
+metadata:
+  name: buildah-example-containerfile
+spec:
+  source:
+    git:
+      url: https://github.com/tosmi/playground
+    contextDir: openshift/example-container
+  strategy:
+    name: buildah
+    kind: ClusterBuildStrategy
+  output:
+    image: quay.io/tosmi/example-container
+    pushSecret: tosmi-quay
+  paramValues:
+  - name: dockerfile
+    value: Containerfile

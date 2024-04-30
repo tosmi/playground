@@ -1,0 +1,18 @@
+kind: BuildConfig
+apiVersion: build.openshift.io/v1
+metadata:
+  name: "example-container-arm"
+spec:
+  nodeSelector:
+    kubernetes.io/arch: arm64
+  runPolicy: "Serial"
+  source:
+    git:
+      uri: "https://github.com/tosmi/playground"
+  strategy:
+    dockerStrategy:
+      dockerfilePath: "openshift/example-container/Containerfile"
+  output:
+    to:
+      kind: "DockerImage"
+      name: "quay.io/tosmi/example-container:v1.0-arm"
