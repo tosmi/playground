@@ -4,7 +4,7 @@ metadata:
   name: multiarch-manifest-create
 spec:
   description: >-
-    Create a Multi-Architecture manifest for the given images
+    Create a Multi-Architecture manifest for the given images and push the manifest to the given registry.
   params:
     - name: images
       description: Array of images to be includes in the multiarchtitecture manifest
