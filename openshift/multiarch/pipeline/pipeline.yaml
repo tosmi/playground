@@ -1,0 +1,24 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: multiarch-pipeline
+spec:
+  params:
+    - name: imagename
+      description: Base name of the image
+      type: string
+    - name: buildconfig
+      description: Name of BuildConfig to trigger
+      type: string
+    - name: architectures
+      description: Architectures to include in the multiarch manifest
+      type: string
+  tasks:
+    - name: multiarch-manifest
+      params:
+        - name: imagename
+          value: "$(param.imagename)"
+        - name: architectures
+          value: "$(param.architectures)"
+      taskRef:
+        name: multiarch-manifest-create

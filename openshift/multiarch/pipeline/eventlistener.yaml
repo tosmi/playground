@@ -1,0 +1,12 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  name: multiarch
+spec:
+  serviceAccountName: pipeline
+  triggers:
+    - name: trigger
+      bindings:
+        - ref: multiarch-pipeline-params
+      template:
+        ref: multiarch-pipeline

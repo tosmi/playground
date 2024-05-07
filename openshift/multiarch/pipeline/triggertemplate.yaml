@@ -1,0 +1,39 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: multiarch-pipeline
+spec:
+  params:
+    - name: imagename
+      description: Image name used for creating manifests
+    - name: buildconfig
+      description: BuildConfig name for triggering builds
+    - name: architectures
+      description: Architectures to include in the multiarch manifest
+  resourcetemplates:
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        generateName: multiarch-
+      spec:
+        pipelineRef:
+          name: multiarch-pipeline
+        params:
+          - name: buildconfig
+            value: $(tt.params.buildconfig)
+          - name: imagename
+            value: $(tt.params.imagename)
+          - name: architectures
+            value: $(tt.params.architectures)
+        # workspaces:
+        #   - name: lint-ws
+        #     volumeClaimTemplate:
+        #       spec:
+        #         accessModes:
+        #           - ReadWriteOnce
+        #         resources:
+        #           requests:
+        #             storage: 200Mi
+        #   - name: git-credentials-ws
+        #     secret:
+        #       secretName: git-basic-auth

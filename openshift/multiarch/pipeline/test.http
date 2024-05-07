@@ -1,0 +1,24 @@
+# -*- restclient -*-
+
+# Test
+GET http://el-multiarch-test.apps.sno.aws.tntinfra.net
+
+# Trigger pipeline
+POST http://el-multiarch-test.apps.sno.aws.tntinfra.net
+Content-Type: application/json
+
+{
+	"imagename": "quay.io/tosmi/example-container:v1.0",
+	"buildconfig": "",
+	"architectures": ["x86", "arm"]
+}
+
+##
+{
+	"imagename": "quay.io/tosmi/example-container:v1.0",
+	"buildconfig": "",
+	"architectures": [
+		 "arm",
+		 "amd64"
+	]
+}

@@ -6,9 +6,9 @@ spec:
   taskRef:
     name: multiarch-manifest-create
   params:
-    - name: images
+    - name: architectures
       value:
-        - quay.io/tosmi/example-container:v1.0-x86
-        - quay.io/tosmi/example-container:v1.0-arm
-    - name: multiarch-image
+        - x86
+        - arm
+    - name: imagename
       value: quay.io/tosmi/example-container:v1.0

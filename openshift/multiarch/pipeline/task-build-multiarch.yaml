@@ -1,16 +1,15 @@
 apiVersion: tekton.dev/v1
 kind: Task
 metadata:
-  name: build-images
+  name: build-multiarch-manifest
 spec:
   description: >-
     Create a Multi-Architecture manifest for the given images and push the manifest to the given registry.
   params:
-    - name: buildconfig
-      description: Array of images to be includes in the multiarchtitecture manifest
-      type: string
-    - name: multiarch-image
+    - name: imagename
       description: Name of the multiarch image to create
+    - name: architectures
+      description: List of support architectures for this image
   steps:
     - name: create-manifest
       securityContext:
@@ -19,10 +18,10 @@ spec:
             - SETFCAP
       image: registry.access.redhat.com/ubi9/buildah:9.3-12
       args:
-        - "$(params.images[*])"
+        - "$(params.architectures[*])"
       env:
         - name: PARAM_MULTIARCH_IMAGE
-          value: $(params.multiarch-image)
+          value: $(params.imagename)
       script: |
         #!/bin/bash -x
 
@@ -34,8 +33,8 @@ spec:
 
         buildah --storage-driver=overlay manifest create "${PARAM_MULTIARCH_IMAGE}"
 
-        for image in "${@}"; do
-          buildah manifest add "${PARAM_MULTIARCH_IMAGE}" "${image}"
+        for arch in "${@}"; do
+          buildah manifest add "${PARAM_MULTIARCH_IMAGE}" "${PARAM_MULTIARCH_IMAGE}-${arch}"
         done
 
         buildah manifest push "${PARAM_MULTIARCH_IMAGE}"

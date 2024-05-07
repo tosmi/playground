@@ -1,0 +1,12 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: multiarch-pipeline-params
+spec:
+  params:
+    - name: buildconfig
+      value: $(body.buildconfig)
+    - name: imagename
+      value: $(body.imagename)
+    - name: architectures
+      value: $(body.architectures)
