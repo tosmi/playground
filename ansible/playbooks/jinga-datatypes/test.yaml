@@ -1,0 +1,78 @@
+---
+- name: Test jinga template processing return types
+  gather_facts: false
+  hosts:
+    - localhost
+  vars:
+    number: "{{ 1 }}"
+
+  tasks:
+    - name: print number
+      debug:
+        msg: "Number is {{ number }}"
+    - name: Create a VM
+      redhat.openshift_virtualization.kubevirt_vm:
+        validate_certs: false
+        state: present
+        name: rhel9
+        namespace: testvm
+        labels:
+          app: rhel9
+        data_volume_templates:
+          - metadata:
+              name: rhel9
+            spec:
+              sourceRef:
+                kind: DataSource
+                name: rhel9
+                namespace: openshift-virtualization-os-images
+              storage:
+                accessModes:
+                  - ReadWriteOnce
+                resources:
+                  requests:
+                    storage: 30Gi
+        spec:
+          architecture: amd64
+          domain:
+            cpu:
+              cores: "{{ number }}"
+              threads: 1
+            devices:
+              disks:
+              - disk:
+                  bus: virtio
+                name: rootdisk
+              - disk:
+                  bus: virtio
+                name: cloudinitdisk
+              interfaces:
+              - masquerade: {}
+                model: virtio
+                name: default
+              - bridge: {}
+                model: virtio
+                name: bridge-network
+            machine:
+              type: pc-q35-rhel9.2.0
+            memory:
+              guest: 2Gi
+            resources: {}
+          networks:
+          - name: default
+            pod: {}
+          - multus:
+              networkName: default/bridge-network
+            name: bridge-network
+          terminationGracePeriodSeconds: 180
+          volumes:
+          - dataVolume:
+              name: rhel9
+            name: rootdisk
+          - cloudInitNoCloud:
+              userData: |-
+                #cloud-config
+                user: centos
+                password: weva-36y4-5rrl
+                chpasswd: { expire: False }
+            name: cloudinitdisk
