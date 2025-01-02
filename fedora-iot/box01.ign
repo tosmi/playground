@@ -1,0 +1,24 @@
+{
+  "ignition": {
+    "config": {
+      "merge": [
+        {
+          "source": "http://arm.stderr.at/fiot/config.ign"
+        }
+      ]
+    },
+    "version": "3.4.0"
+  },
+  "storage": {
+    "files": [
+      {
+        "path": "/etc/NetworkManager/system-connections/eno0.nmconnection",
+        "contents": {
+          "compression": "",
+          "source": "data:,%5Bconnection%5D%0Aid%3Deno0%0Atype%3Dethernet%0Ainterface-name%3Deno0%0A%5Bipv4%5D%0Aaddress1%3D10.0.0.208%0Adns%3D10.0.0.254%0Adns-search%3Dlan.stderr.at%0Amay-fail%3Dfalse%0Amethod%3Dmanual%0A"
+        },
+        "mode": 384
+      }
+    ]
+  }
+}

@@ -1,0 +1,22 @@
+variant: fiot
+version: 1.0.0
+ignition:
+  config:
+    merge:
+      - source: http://arm.stderr.at/fiot/config.ign
+storage:
+  files:
+    - path: /etc/NetworkManager/system-connections/eno0.nmconnection
+      contents:
+        inline: |
+          [connection]
+          id=eno0
+          type=ethernet
+          interface-name=eno0
+          [ipv4]
+          address1=10.0.0.208
+          dns=10.0.0.254
+          dns-search=lan.stderr.at
+          may-fail=false
+          method=manual
+      mode: 0600

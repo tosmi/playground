@@ -1,0 +1,9 @@
+variant: fiot
+version: 1.0.0
+passwd:
+  users:
+    - name: core
+      groups:
+        - wheel
+      ssh_authorized_keys:
+        - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMY2sfbOKHHYe5rUJe57JQvdNFnfQzc/zbnsz+d2eFgT
