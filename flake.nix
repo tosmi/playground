@@ -1,15 +1,28 @@
 {
-  description = "A very basic flake";
+  description = "Playground Tools";
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+  inputs.flake-utils.url = "github:numtide/flake-utils";
 
-  inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
-  };
+  outputs = { nixpkgs, flake-utils, ... }:
+    flake-utils.lib.eachDefaultSystem (system:
+      let
+        pkgs = nixpkgs.legacyPackages.${system};
+      in
+      {
+        devShells.default = pkgs.mkShell {
+          packages = [
+            pkgs.bashInteractive
+            pkgs.yamllint
 
-  outputs = { self, nixpkgs }: {
+            pkgs.kustomize
+            pkgs.argocd
+            pkgs.kubernetes-helm
 
-    packages.x86_64-linux.hello = nixpkgs.legacyPackages.x86_64-linux.hello;
-
-    packages.x86_64-linux.default = self.packages.x86_64-linux.hello;
-
-  };
+            pkgs.ansible
+            pkgs.ansible-lint
+            # required for kubernetes collection
+            pkgs.python312Packages.kubernetes
+          ];
+        };
+      });
 }
