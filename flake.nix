@@ -14,6 +14,8 @@
             pkgs.bashInteractive
             pkgs.yamllint
 
+            pkgs.maven
+
             pkgs.kustomize
             pkgs.argocd
             pkgs.kubernetes-helm
