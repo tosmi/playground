@@ -6,13 +6,13 @@ ignition:
       - source: http://arm.stderr.at/fiot/config.ign
 storage:
   files:
-    - path: /etc/NetworkManager/system-connections/eno0.nmconnection
+    - path: /etc/NetworkManager/system-connections/eno1.nmconnection
       contents:
         inline: |
           [connection]
-          id=eno0
+          id=eno1
           type=ethernet
-          interface-name=eno0
+          interface-name=eno1
           [ipv4]
           address1=10.0.0.208
           dns=10.0.0.254
