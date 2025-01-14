@@ -1,3 +1,7 @@
+---
+# This NAD is used when the VLAN is configured on the host via the
+# bridge interface.
+#
 apiVersion: "k8s.cni.cncf.io/v1"
 kind: NetworkAttachmentDefinition
 metadata:
@@ -10,10 +14,9 @@ spec:
     {
       "cniVersion": "0.3.1",
       "name": "storage-network",
-      "type": "bridge",
-      "bridge": "brvirt1",
+      "type": "vlan",
+      "master": "brvirt1.666",
       "macspoofchk": false,
-      "vlan": 666,
       "disableContainerInterface": false,
       "preserveDefaultVlan": false
     }
