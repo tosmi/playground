@@ -12,6 +12,24 @@ spec:
     kubernetes.io/hostname: fractal.lan.stderr.at
   desiredState:
     interfaces:
+    - name: veth1
+      type: veth
+      state: up
+      veth:
+        peer: veth2
+
+    - name: veth2
+      type: veth
+      state: up
+      veth:
+        peer: veth1
+      ipv4:
+        dhcp: false
+        enabled: true
+        address:
+          - ip: 192.168.1.5
+            prefix-length: 24
+
     # this is our bridge interface for the storage lan
     # the VLAN is configured via an NetworkAttachmentDefinition
     - bridge:
@@ -21,24 +39,23 @@ spec:
           vlan-default-pvid: 1
         port:
         - name: enp6s0
-
+        - name: veth1
+          vlan:
+            tag: 666
+            mode: access
       description: Linux bridge on fractal with enp6s0 as a port
-      # this would work if we find a way to set the pvid to 666 for brvirt1
-      ipv4:
-        dhcp: false
-        enabled: true
-        address:
-          - ip: 192.168.1.5
-            prefix-length: 24
+      # ipv4:
+      #   dhcp: false
+      #   enabled: true
+      #   address:
+      #     - ip: 192.168.1.5
+      #       prefix-length: 24
       name: brvirt1
       state: up
       type: linux-bridge
 
     # We need access to VLAN 666 on the host as well XXX Does not work
     # currently. ARP only visible on brvrit but not on the phy
-    #
-    # XXX THIS DOES NOT WORK!
-    #
     # interface.
     # - name: brvirt1.666
     #   type: vlan
