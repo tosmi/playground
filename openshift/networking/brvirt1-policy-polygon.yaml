@@ -1,0 +1,86 @@
+# We have a VLAN 666 for storage access
+# this is a tagged VLAN on the external switch
+---
+apiVersion: nmstate.io/v1
+kind: NodeNetworkConfigurationPolicy
+metadata:
+  labels:
+    app.kubernetes.io/instance: virt-network-sno-home
+  name: brvirt1-policy
+spec:
+  nodeSelector:
+    kubernetes.io/hostname: polygon.lan.stderr.at
+  desiredState:
+    interfaces:
+
+    - name: bond-tplink0
+        description: Bond to TP-Link which various VLANS (e.g. storage 666)
+        state: up
+        type: bond
+        mtu: 1500
+        link-aggregation:
+          mode: active-backup
+          options:
+            miimon: '140'
+          port:
+            - enp12s0
+            - enp12s1
+        ipv4:
+          enabled: false
+        ipv6:
+          enabled: false
+
+      - name: enp12s0
+        description: Bond member (bond-tplink0)
+        state: up
+        type: ethernet
+        mtu: 1500
+        lldp:
+          enabled: false
+        ipv4:
+          enabled: false
+        ipv6:
+          enabled: false
+
+      - name: enp12s1
+        description: Bond member (bond-tplink0)
+        state: up
+        type: ethernet
+        mtu: 1500
+        lldp:
+          enabled: false
+        ipv4:
+          enabled: false
+        ipv6:
+          enabled: false
+
+    # this is our bridge interface for the storage lan
+    # the VLAN is configured via an NetworkAttachmentDefinition
+    - bridge:
+        options:
+          stp:
+            enabled: false
+        port:
+        - name: bond-tplink0
+      description: Linux bridge on polygon
+      ipv4:
+        enabled: false
+      ipv6:
+        enabled: false
+      name: brvirt1
+      state: up
+      type: linux-bridge
+
+    # We need access to VLAN 666 on the host as well
+    - name: bond-tplink0.666
+      type: vlan
+      state: up
+      ipv4:
+        dhcp: false
+        enabled: true
+        address:
+          - ip: 192.168.1.5
+            prefix-length: 24
+      vlan:
+        base-iface: bond-tplink0
+        id: 666

@@ -1,0 +1,19 @@
+apiVersion: "k8s.cni.cncf.io/v1"
+kind: NetworkAttachmentDefinition
+metadata:
+  name: storage-network
+  namespace: default
+  annotations:
+    k8s.v1.cni.cncf.io/resourceName: bridge.network.kubevirt.io/brvirt1
+spec:
+  config: |
+    {
+      "cniVersion": "0.3.1",
+      "name": "storage-network",
+      "type": "bridge",
+      "bridge": "brvirt1",
+      "macspoofchk": false,
+      "vlan": 666,
+      "disableContainerInterface": false,
+      "preserveDefaultVlan": false
+    }
