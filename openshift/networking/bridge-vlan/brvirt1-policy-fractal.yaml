@@ -19,11 +19,16 @@ spec:
         options:
           stp:
             enabled: false
+          vlan-default-pvid: 1
         port:
         - name: enp6s0
       description: Linux bridge on fractal with enp6s0 as a port
       ipv4:
-        enabled: false
+        dhcp: false
+        enabled: true
+        address:
+          - ip: 192.168.1.5
+            prefix-length: 24
       name: brvirt1
       state: up
       type: linux-bridge
@@ -31,15 +36,10 @@ spec:
     # We need access to VLAN 666 on the host as well XXX Does not work
     # currently. ARP only visible on brvrit but not on the phy
     # interface.
-    - name: brvirt1.666
-      type: vlan
-      state: up
-      ipv4:
-        dhcp: false
-        enabled: true
-        address:
-          - ip: 192.168.1.5
-            prefix-length: 24
-      vlan:
-        base-iface: brvirt1
-        id: 666
+    # - name: brvirt1.666
+    #   type: vlan
+    #   state: up
+
+    #   vlan:
+    #     base-iface: brvirt1
+    #     id: 666
