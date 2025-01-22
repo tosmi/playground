@@ -1,0 +1,179 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: application1
+  labels:
+    cs-dice/project-size: M
+...
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: application2
+  labels:
+    cs-dice/project-size: S
+...
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  namespace: application1
+  labels:
+    app: nginx
+    openshift-example: "yes"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+        openshift-example: "yes"
+    spec:
+      containers:
+      - name: nginx
+        image: nginxinc/nginx-unprivileged:1.23.1
+        livenessProbe:
+          httpGet:
+            path: /hello
+            port: 8080
+            httpHeaders:
+              - name: Custom-Header
+                value: Awesome
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        ports:
+          - containerPort: 8080
+...
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  namespace: application2
+  labels:
+    app: nginx
+    openshift-example: "yes"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+        openshift-example: "yes"
+    spec:
+      containers:
+      - name: nginx
+        image: nginxinc/nginx-unprivileged:1.23.1
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8080
+            httpHeaders:
+              - name: Custom-Header
+                value: Awesome
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        ports:
+          - containerPort: 8080
+...
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment-dead
+  namespace: application2
+  labels:
+    app: nginx
+    openshift-example: "yes"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-dead
+  template:
+    metadata:
+      labels:
+        app: nginx-dead
+        openshift-example: "yes"
+    spec:
+      containers:
+      - name: nginx-dead
+        image: nginxinc/nginx-unprivileged:1.23.1
+        livenessProbe:
+          httpGet:
+            path: /hello
+            port: 8080
+            httpHeaders:
+              - name: Custom-Header
+                value: Awesome
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        ports:
+          - containerPort: 8080
+...
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment-dead2
+  namespace: application2
+  labels:
+    app: nginx
+    openshift-example: "yes"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-dead2
+  template:
+    metadata:
+      labels:
+        app: nginx-dead2
+        openshift-example: "yes"
+    spec:
+      containers:
+      - name: nginx-dead2
+        image: nginxinc/nginx-unprivileged:1.23.1
+        livenessProbe:
+          httpGet:
+            path: /hello
+            port: 8080
+            httpHeaders:
+              - name: Custom-Header
+                value: Awesome
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        ports:
+          - containerPort: 8080
+...
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: hello
+  namespace: application2
+spec:
+  schedule: "*/2 * * * *"
+  jobTemplate:
+    spec:
+      failedJobsHistoryLimit: 3
+      template:
+        spec:
+          containers:
+          - name: hello
+            image: busybox:1.28
+            imagePullPolicy: IfNotPresent
+            command:
+            - /bin/sh
+            - -c
+            - date; echo Hello from the Kubernetes cluster
+          restartPolicy: OnFailure
+...
