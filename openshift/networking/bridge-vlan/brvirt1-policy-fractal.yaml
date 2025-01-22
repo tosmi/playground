@@ -1,0 +1,49 @@
+# We have a VLAN 666 for storage access
+# this is a tagged VLAN on the external switch
+---
+apiVersion: nmstate.io/v1
+kind: NodeNetworkConfigurationPolicy
+metadata:
+  labels:
+    app.kubernetes.io/instance: virt-network-sno-home
+  name: brvirt1-policy
+spec:
+  nodeSelector:
+    kubernetes.io/hostname: fractal.lan.stderr.at
+  desiredState:
+    interfaces:
+    # this is our bridge interface for the storage lan
+    # the VLAN is configured via an NetworkAttachmentDefinition
+    - bridge:
+        options:
+          stp:
+            enabled: false
+          vlan-default-pvid: 1
+        port:
+        - name: enp6s0
+
+      description: Linux bridge on fractal with enp6s0 as a port
+      # this would work if we find a way to set the pvid to 666 for brvirt1
+      ipv4:
+        dhcp: false
+        enabled: true
+        address:
+          - ip: 192.168.1.5
+            prefix-length: 24
+      name: brvirt1
+      state: up
+      type: linux-bridge
+
+    # We need access to VLAN 666 on the host as well XXX Does not work
+    # currently. ARP only visible on brvrit but not on the phy
+    #
+    # XXX THIS DOES NOT WORK!
+    #
+    # interface.
+    # - name: brvirt1.666
+    #   type: vlan
+    #   state: up
+
+    #   vlan:
+    #     base-iface: brvirt1
+    #     id: 666
