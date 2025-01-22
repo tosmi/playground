@@ -1,0 +1,10 @@
+FROM quay.io/prometheus/promlens:latest
+
+COPY tntinfra-ca.crt /tmp
+
+USER root
+RUN cat /tmp/tntinfra-ca.crt >> /etc/ssl/certs/ca-certificates.crt
+
+USER nobody
+EXPOSE 8080
+ENTRYPOINT [ "/bin/promlens" ]
