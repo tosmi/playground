@@ -1,0 +1,24 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: cluster-monitoring-operator
+    app.kubernetes.io/name: cluster-upgrade
+    app.kubernetes.io/version: 1.0.0
+    prometheus: k8s
+    role: alert-rules
+  name: cluster-ugprade-rules
+  namespace: openshift-monitoring
+spec:
+  groups:
+  - name: cluster-upgrade.rules
+    rules:
+    - expr: |
+        sum(cluster_operator_up == 1) by (version)
+      record: cluster:operator:version
+    - record:  cluster:operator:upgraded
+      expr: |
+        (count(cluster_operator_up) - count((cluster_operator_up == 1) * on(version) group_left cluster_version{type="completed"})) * count(cluster_version{type="updating"})
+    - record:  mco:machine:updating
+      expr: |
+        (mco_machine_count - mco_updated_machine_count)  * on (managed_cluster) group_left cluster_version{type="updating"}
