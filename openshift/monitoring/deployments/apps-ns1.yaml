@@ -41,3 +41,38 @@ spec:
         ports:
           - containerPort: 8080
 ...
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: doesnotexist-deployment
+  namespace: application1
+  labels:
+    app: doesnotexist
+    openshift-example: "yes"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: doesnotexist
+  template:
+    metadata:
+      labels:
+        app: doesnotexist
+        openshift-example: "yes"
+    spec:
+      containers:
+      - name: doesnotexist
+        image: doesnotexist
+        livenessProbe:
+          httpGet:
+            path: /hello
+            port: 8080
+            httpHeaders:
+              - name: Custom-Header
+                value: Awesome
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        ports:
+          - containerPort: 8080
+...

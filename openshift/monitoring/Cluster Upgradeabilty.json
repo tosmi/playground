@@ -162,6 +162,90 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS_APP}"
       },
+      "description": "This displays the number of pod restarts in all namespaces with the label 'cs-dice/project-size' XXX what happens with jobs?",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "options": {
+                "match": "null+nan",
+                "result": {
+                  "color": "green",
+                  "index": 0,
+                  "text": "0"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 5,
+        "x": 4,
+        "y": 0
+      },
+      "id": 22,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.1.5",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS_APP}"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "round(sum(rate((kube_pod_container_status_restarts_total * on(namespace) group_left kube_namespace_labels{label_cs_dice_project_size!=\"\"} > 0)[30m:]) * 1800))",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Pod restarts in the last 30 minutes",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "description": "This displays the number of failed pods in all namespaces with the label 'cs-dice/project-size' XXX what happens with jobs?",
       "fieldConfig": {
         "defaults": {
@@ -199,11 +283,11 @@
       },
       "gridPos": {
         "h": 5,
-        "w": 7,
-        "x": 4,
+        "w": 5,
+        "x": 9,
         "y": 0
       },
-      "id": 14,
+      "id": 23,
       "options": {
         "colorMode": "value",
         "graphMode": "area",
@@ -230,7 +314,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "count(((kube_pod_container_status_ready == 0) unless on (pod) (kube_pod_status_phase{phase=\"Succeeded\"}==1)) * on(namespace) group_left kube_namespace_labels{label_cs_dice_project_size!=\"\"})",
+          "expr": "sum((kube_pod_status_phase{phase!~\"Running|Succeeded\"} == 1) * on(namespace) group_left kube_namespace_labels{label_cs_dice_project_size!=\"\"})",
           "format": "table",
           "instant": true,
           "legendFormat": "__auto",
@@ -238,7 +322,7 @@
           "refId": "A"
         }
       ],
-      "title": "Number of failed application pods",
+      "title": "Pods NOT in state running or succeded",
       "type": "stat"
     },
     {
@@ -272,7 +356,7 @@
       "gridPos": {
         "h": 5,
         "w": 4,
-        "x": 11,
+        "x": 14,
         "y": 0
       },
       "id": 9,
@@ -342,7 +426,7 @@
       "gridPos": {
         "h": 5,
         "w": 4,
-        "x": 15,
+        "x": 18,
         "y": 0
       },
       "id": 2,
@@ -599,18 +683,6 @@
         "overrides": [
           {
             "matcher": {
-              "id": "byFrameRefID",
-              "options": "A"
-            },
-            "properties": [
-              {
-                "id": "noValue",
-                "value": "None"
-              }
-            ]
-          },
-          {
-            "matcher": {
               "id": "byName",
               "options": "Value"
             },
@@ -641,7 +713,7 @@
                         "index": 2,
                         "text": "Upgrade progressing"
                       },
-                      "to": 999999
+                      "to": 9999999
                     },
                     "type": "range"
                   }
@@ -657,7 +729,7 @@
         "x": 0,
         "y": 11
       },
-      "id": 16,
+      "id": 20,
       "options": {
         "colorMode": "value",
         "graphMode": "area",
@@ -684,7 +756,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "changes(cluster:operator:upgraded[30m]) OR on() vector(-1)",
+          "expr": "(changes(cluster:operator:upgraded2[30m]) * on () count(cluster_version{type=\"updating\"})) OR on() vector(-1)",
           "format": "table",
           "instant": true,
           "legendFormat": "__auto",
@@ -868,7 +940,7 @@
                 "value": null
               },
               {
-                "color": "#EAB839",
+                "color": "yellow",
                 "value": 1
               }
             ]
@@ -878,7 +950,7 @@
       },
       "gridPos": {
         "h": 5,
-        "w": 5,
+        "w": 3,
         "x": 0,
         "y": 17
       },
@@ -946,7 +1018,7 @@
       "gridPos": {
         "h": 5,
         "w": 9,
-        "x": 5,
+        "x": 3,
         "y": 17
       },
       "id": 6,
@@ -995,6 +1067,198 @@
           "color": {
             "mode": "thresholds"
           },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Value"
+            },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "red",
+                      "value": 1
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 3,
+        "x": 0,
+        "y": 22
+      },
+      "id": 21,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.1.5",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS_APP}"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "sum(kube_node_status_condition{condition=\"Ready\",status=\"unknown\"})\n",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "#Nodes not ready",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Value"
+            },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "red",
+                      "value": 1
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 3,
+        "x": 3,
+        "y": 22
+      },
+      "id": 24,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.1.5",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS_APP}"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "sum(kube_node_spec_unschedulable)",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "#Nodes not schedulable",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
           "custom": {
             "align": "center",
             "cellOptions": {
@@ -1024,9 +1288,9 @@
       },
       "gridPos": {
         "h": 5,
-        "w": 10,
-        "x": 14,
-        "y": 17
+        "w": 6,
+        "x": 6,
+        "y": 22
       },
       "id": 7,
       "options": {
@@ -1094,7 +1358,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 22
+        "y": 27
       },
       "id": 8,
       "panels": [
@@ -1194,7 +1458,7 @@
             "h": 34,
             "w": 14,
             "x": 0,
-            "y": 23
+            "y": 31
           },
           "id": 3,
           "options": {
@@ -1334,7 +1598,7 @@
             "h": 6,
             "w": 8,
             "x": 0,
-            "y": 57
+            "y": 65
           },
           "id": 4,
           "options": {
@@ -1442,7 +1706,7 @@
             "h": 6,
             "w": 15,
             "x": 8,
-            "y": 57
+            "y": 65
           },
           "id": 1,
           "options": {
@@ -1510,20 +1774,230 @@
       "type": "row"
     },
     {
-      "collapsed": false,
+      "collapsed": true,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 23
+        "y": 28
       },
       "id": 19,
-      "panels": [],
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byFrameRefID",
+                  "options": "A"
+                },
+                "properties": [
+                  {
+                    "id": "noValue",
+                    "value": "None"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Value"
+                },
+                "properties": [
+                  {
+                    "id": "mappings",
+                    "value": [
+                      {
+                        "options": {
+                          "0": {
+                            "color": "red",
+                            "index": 1,
+                            "text": "Upgrade stuck"
+                          },
+                          "-1": {
+                            "color": "green",
+                            "index": 0,
+                            "text": "No upgrade in progress"
+                          }
+                        },
+                        "type": "value"
+                      },
+                      {
+                        "options": {
+                          "from": 1,
+                          "result": {
+                            "color": "yellow",
+                            "index": 2,
+                            "text": "Upgrade progressing"
+                          },
+                          "to": 999999
+                        },
+                        "type": "range"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 9,
+            "x": 0,
+            "y": 29
+          },
+          "id": 16,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.1.5",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_OBSERVATORIUM}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "changes(cluster:operator:upgraded[30m]) OR on() vector(-1)\n",
+              "format": "table",
+              "instant": true,
+              "legendFormat": "__auto",
+              "range": false,
+              "refId": "A"
+            }
+          ],
+          "title": "Cluster operators upgrades in the last 30 minues",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "This displays the number of failed pods in all namespaces with the label 'cs-dice/project-size' XXX what happens with jobs?",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [
+                {
+                  "options": {
+                    "match": "null+nan",
+                    "result": {
+                      "color": "green",
+                      "index": 0,
+                      "text": "0"
+                    }
+                  },
+                  "type": "special"
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "yellow",
+                    "value": 1
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 5,
+            "x": 0,
+            "y": 34
+          },
+          "id": 14,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.1.5",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS_APP}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "round(sum(rate((kube_pod_container_status_restarts_total * on(namespace) group_left kube_namespace_labels{label_cs_dice_project_size!=\"\"} > 0)[30m:]) * 1800))",
+              "format": "table",
+              "instant": true,
+              "legendFormat": "__auto",
+              "range": false,
+              "refId": "A"
+            }
+          ],
+          "title": "Number of pod restart",
+          "type": "stat"
+        }
+      ],
       "title": "Other queries",
       "type": "row"
     }
   ],
-  "refresh": "1m",
+  "refresh": "5s",
   "schemaVersion": 39,
   "tags": [],
   "templating": {
@@ -1553,6 +2027,6 @@
   "timezone": "browser",
   "title": "Cluster Upgradeabilty",
   "uid": "ee6vyyrhw8kxsd",
-  "version": 97,
+  "version": 117,
   "weekStart": ""
 }

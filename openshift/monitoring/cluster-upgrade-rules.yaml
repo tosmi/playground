@@ -7,7 +7,7 @@ metadata:
     app.kubernetes.io/version: 1.0.0
     prometheus: k8s
     role: alert-rules
-  name: cluster-ugprade-rules
+  name: cluster-upgrade-rules
   namespace: openshift-monitoring
 spec:
   groups:
@@ -19,6 +19,9 @@ spec:
     - record:  cluster:operator:upgraded
       expr: |
         (count(cluster_operator_up) - count((cluster_operator_up == 1) * on(version) group_left cluster_version{type="completed"})) * count(cluster_version{type="updating"})
+    - record:  cluster:operator:upgraded2
+      expr: |
+        (count(cluster_operator_up) - count((cluster_operator_up == 1) * on(version) group_left cluster_version{type="completed"}))
     - record:  mco:machine:updating
       expr: |
         (mco_machine_count - mco_updated_machine_count)  * on (managed_cluster) group_left cluster_version{type="updating"}
