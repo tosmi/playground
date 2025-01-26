@@ -322,7 +322,7 @@
           "refId": "A"
         }
       ],
-      "title": "Pods NOT in state running or succeded",
+      "title": "Pods NOT in state running or succeeded",
       "type": "stat"
     },
     {
@@ -1799,8 +1799,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -1936,8 +1935,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "yellow",
@@ -2027,6 +2025,6 @@
   "timezone": "browser",
   "title": "Cluster Upgradeabilty",
   "uid": "ee6vyyrhw8kxsd",
-  "version": 117,
+  "version": 119,
   "weekStart": ""
 }
